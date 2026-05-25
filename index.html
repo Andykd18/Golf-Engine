@@ -1056,7 +1056,6 @@ function updateHint(inputId, hintId) {
 }
 
 $('edge-sl').oninput = () => { $('edge-v').textContent = $('edge-sl').value + '%'; run(); };
-$('ha').onchange = run;
 ['hxg','axg','hxga','axga'].forEach(id => $(id).addEventListener('input', run));
 ['hodds','dodds','aodds'].forEach(id => {
   $(id).addEventListener('input', () => {
