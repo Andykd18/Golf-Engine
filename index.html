@@ -943,17 +943,13 @@ async function fetchData() {
         $('ay-sub').textContent = `Conceded: ${a.yellow_cards_against ?? '—'} avg`;
       }
 
-      // Red cards
+      // Red cards — show 0 if none
       $('hr-lbl').textContent = hName + ' reds';
       $('ar-lbl').textContent = aName + ' reds';
-      if (h.red_cards_for != null) {
-        $('hr-avg').textContent = h.red_cards_for.toFixed(2);
-        $('hr-sub').textContent = `Conceded: ${(h.red_cards_against ?? 0).toFixed(2)} avg`;
-      }
-      if (a.red_cards_for != null) {
-        $('ar-avg').textContent = a.red_cards_for.toFixed(2);
-        $('ar-sub').textContent = `Conceded: ${(a.red_cards_against ?? 0).toFixed(2)} avg`;
-      }
+      $('hr-avg').textContent = (h.red_cards_for != null && h.red_cards_for > 0) ? h.red_cards_for.toFixed(2) : '0';
+      $('hr-sub').textContent = 'Avg per match (last 10)';
+      $('ar-avg').textContent = (a.red_cards_for != null && a.red_cards_for > 0) ? a.red_cards_for.toFixed(2) : '0';
+      $('ar-sub').textContent = 'Avg per match (last 10)';
 
       // Shots
       $('hs-lbl').textContent = hName + ' shots';
