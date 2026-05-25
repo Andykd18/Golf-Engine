@@ -106,7 +106,6 @@
   select option { background: #2c2c2a; color: #f0ede8; font-weight: 400; }
 
   .field-label { font-size: 11px; color: var(--text-3); margin-bottom: 6px; }
-
   .xg-input-wrap { margin-bottom: 14px; }
 
   .xg-input-wrap input[type=number] {
@@ -143,12 +142,7 @@
 
   .odds-input:focus { border-color: var(--blue-text); }
   .odds-input.invalid { border-color: var(--red-text); }
-
-  .odds-hint {
-    font-size: 10px;
-    color: var(--text-3);
-    margin-top: 3px;
-  }
+  .odds-hint { font-size: 10px; color: var(--text-3); margin-top: 3px; }
 
   .vs-col {
     display: flex;
@@ -162,16 +156,13 @@
   .vs-txt { font-size: 12px; font-weight: 500; color: var(--text-3); }
 
   .swap-btn {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     border: 0.5px solid var(--border-mid);
     background: var(--surface2);
     color: var(--text-2);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 15px;
     transition: background .15s, color .15s;
   }
@@ -196,6 +187,7 @@
   }
 
   .draw-input:focus { border-color: var(--blue-text); }
+  .draw-input.invalid { border-color: var(--red-text); }
 
   .settings {
     display: flex;
@@ -213,36 +205,16 @@
 
   input[type=range] {
     -webkit-appearance: none;
-    flex: 1;
-    min-width: 80px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border-mid);
-    outline: none;
+    flex: 1; min-width: 80px;
+    height: 4px; border-radius: 2px;
+    background: var(--border-mid); outline: none;
   }
 
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 16px; height: 16px;
     border-radius: 50%;
-    background: var(--text);
-    cursor: pointer;
-  }
-
-  .ha-wrap {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding-left: 14px;
-    border-left: 0.5px solid var(--border);
-  }
-
-  .ha-wrap input[type=checkbox] {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    accent-color: var(--blue-text);
+    background: var(--text); cursor: pointer;
   }
 
   .btn-row {
@@ -253,71 +225,47 @@
   }
 
   .calc-btn, .fetch-btn {
-    width: 100%;
-    padding: 11px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    border: none;
-    border-radius: var(--radius-sm);
+    width: 100%; padding: 11px;
+    font-size: 14px; font-weight: 500; font-family: inherit;
+    cursor: pointer; border: none; border-radius: var(--radius-sm);
     transition: opacity .15s;
   }
 
-  .calc-btn {
-    background: var(--text);
-    color: var(--bg);
-  }
+  .calc-btn { background: var(--text); color: var(--bg); }
 
   .fetch-btn {
-    background: var(--blue);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
+    background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
   }
 
-  .fetch-btn:hover { opacity: .85; }
-  .fetch-btn:active { opacity: .7; }
-  .calc-btn:hover { opacity: .85; }
-  .calc-btn:active { opacity: .7; }
-
+  .fetch-btn:hover, .calc-btn:hover { opacity: .85; }
+  .fetch-btn:active, .calc-btn:active { opacity: .7; }
   .fetch-btn.loading { opacity: .6; cursor: wait; }
 
   .fetch-status {
-    font-size: 11px;
-    color: var(--text-3);
-    margin-bottom: 1rem;
-    min-height: 16px;
-    text-align: center;
+    font-size: 11px; color: var(--text-3);
+    margin-bottom: 0.5rem; min-height: 16px; text-align: center;
   }
 
   .fetch-status.ok  { color: var(--green-text); }
   .fetch-status.err { color: var(--red-text); }
 
   .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 10px;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 10px;
   }
 
   .outcomes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 1.5rem;
+    gap: 10px; margin-bottom: 1.5rem;
   }
 
   .oc {
     background: var(--surface2);
     border-radius: var(--radius-sm);
-    padding: 1rem;
-    position: relative;
-    overflow: hidden;
+    padding: 1rem; position: relative; overflow: hidden;
   }
 
   .oc-bar { position: absolute; bottom: 0; left: 0; height: 3px; transition: width .4s ease; }
@@ -347,242 +295,86 @@
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button { opacity: 1; }
 
-  .draw-input {
-    width: 60px;
-    font-size: 13px;
-    font-family: inherit;
-    padding: 6px 8px;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface2);
-    color: var(--text);
-    text-align: center;
-    outline: none;
-  }
-
-  .draw-input:focus { border-color: var(--blue-text); }
-  .draw-input.invalid { border-color: var(--red-text); }
-
-  /* ── History ── */
-  .history-wrap {
-    margin-top: 2rem;
-    border-top: 0.5px solid var(--border);
-    padding-top: 1.5rem;
-  }
+  /* History */
+  .history-wrap { margin-top: 2rem; border-top: 0.5px solid var(--border); padding-top: 1.5rem; }
 
   .history-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
   }
 
   .clear-btn {
-    font-size: 11px;
-    color: var(--text-3);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-size: 11px; color: var(--text-3);
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; padding: 2px 6px; border-radius: 4px;
   }
 
   .clear-btn:hover { color: var(--red-text); }
-
-  .history-empty {
-    font-size: 12px;
-    color: var(--text-3);
-    padding: 1rem 0;
-  }
+  .history-empty { font-size: 12px; color: var(--text-3); padding: 1rem 0; }
 
   .history-item {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: border-color .15s;
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
   }
 
   .history-item:hover { border-color: var(--border-mid); }
 
   .history-match {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    font-size: 13px; font-weight: 500; margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: center;
   }
 
-  .history-time {
-    font-size: 10px;
-    color: var(--text-3);
-    font-weight: 400;
-  }
+  .history-time { font-size: 10px; color: var(--text-3); font-weight: 400; }
+  .history-stats { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  .history-stats {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .hstat {
-    font-size: 11px;
-    color: var(--text-2);
-    background: var(--surface2);
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-
+  .hstat { font-size: 11px; color: var(--text-2); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
   .hstat.val  { background: var(--green-light); color: var(--green-text); }
   .hstat.over { background: var(--red-light);   color: var(--red-text); }
 
-  /* ── Acca builder ── */
-  .acca-wrap {
-    margin-top: 1.5rem;
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    display: none;
-  }
-
+  /* Acca builder */
+  .acca-wrap { margin-top: 1.5rem; background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; display: none; }
   .acca-wrap.visible { display: block; }
-
-  .acca-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
+  .acca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .acca-header h3 { font-size: 13px; font-weight: 500; }
-
   .acca-legs { margin-bottom: 12px; }
-
-  .acca-leg {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 0;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 12px;
-  }
-
+  .acca-leg { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
   .acca-leg:last-child { border-bottom: none; }
-
   .acca-leg-match { flex: 1; color: var(--text-2); }
   .acca-leg-sel   { font-weight: 500; color: var(--text); min-width: 80px; }
   .acca-leg-odds  { color: var(--blue-text); min-width: 40px; text-align: right; }
-
-  .acca-leg-remove {
-    background: none;
-    border: none;
-    color: var(--text-3);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 4px;
-    line-height: 1;
-  }
-
+  .acca-leg-remove { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 14px; padding: 0 4px; line-height: 1; }
   .acca-leg-remove:hover { color: var(--red-text); }
-
-  .acca-result {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 10px;
-    border-top: 0.5px solid var(--border);
-  }
-
-  .acca-total-odds {
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--blue-text);
-  }
-
+  .acca-result { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 0.5px solid var(--border); }
+  .acca-total-odds { font-size: 20px; font-weight: 500; color: var(--blue-text); }
   .acca-meta { font-size: 11px; color: var(--text-3); }
-
-  .acca-add-btn {
-    font-size: 11px;
-    background: var(--surface);
-    border: 0.5px solid var(--border-mid);
-    border-radius: 4px;
-    color: var(--text-2);
-    cursor: pointer;
-    padding: 3px 8px;
-    font-family: inherit;
-  }
-
+  .acca-add-btn { font-size: 11px; background: var(--surface); border: 0.5px solid var(--border-mid); border-radius: 4px; color: var(--text-2); cursor: pointer; padding: 3px 8px; font-family: inherit; }
   .acca-add-btn:hover { color: var(--text); }
 
-  /* ── Export button ── */
+  /* Export button */
   .export-btn {
-    width: 100%;
-    padding: 9px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface2);
-    color: var(--text-2);
-    margin-top: 10px;
+    width: 100%; padding: 9px; font-size: 13px; font-weight: 500; font-family: inherit;
+    cursor: pointer; border: 0.5px solid var(--border-mid); border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--text-2); margin-top: 10px;
     transition: background .15s, color .15s;
   }
   .export-btn:hover { background: var(--surface); color: var(--text); }
 
-
-  /* ── Fixture picker ── */
-  .fixture-picker {
-    margin-bottom: 1rem;
-  }
-
-  .fixture-picker-label {
-    font-size: 11px;
-    color: var(--text-3);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    font-weight: 500;
-  }
-
-  .fixture-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
+  /* Fixture picker */
+  .fixture-picker { margin-bottom: 1rem; }
+  .fixture-picker-label { font-size: 11px; color: var(--text-3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+  .fixture-list { display: flex; flex-direction: column; gap: 6px; }
   .fixture-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-family: inherit;
-    color: var(--text);
-    transition: border-color .15s, background .15s;
-    text-align: left;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
+    color: var(--text); transition: border-color .15s, background .15s; text-align: left;
   }
-
   .fixture-btn:hover { border-color: var(--border-mid); background: var(--surface2); }
   .fixture-btn.active { border-color: var(--blue-text); background: var(--blue-light); }
-
   .fixture-match { font-size: 13px; font-weight: 500; }
   .fixture-date  { font-size: 11px; color: var(--text-3); }
-
-  .fixture-loading {
-    font-size: 12px;
-    color: var(--text-3);
-    padding: 8px 0;
-  }
-
+  .fixture-loading { font-size: 12px; color: var(--text-3); padding: 8px 0; }
 </style>
 </head>
 <body>
@@ -593,7 +385,6 @@
     <span id="match-title">World Cup 2026</span>
   </header>
 
-  <!-- Fixture picker -->
   <div class="fixture-picker">
     <div class="fixture-picker-label">Upcoming fixtures</div>
     <div class="fixture-list" id="fixture-list">
@@ -653,13 +444,10 @@
     <label>Min edge</label>
     <input type="range" min="1" max="20" step="1" value="5" id="edge-sl">
     <span class="sval" id="edge-v">5%</span>
-
   </div>
 
   <div class="btn-row">
-    <button class="fetch-btn" id="fetch-btn" onclick="fetchData()">
-      ↓ Fetch xG &amp; odds
-    </button>
+    <button class="fetch-btn" id="fetch-btn" onclick="fetchData()">↓ Fetch xG &amp; odds</button>
     <button class="calc-btn" onclick="calculate()">Calculate</button>
   </div>
   <div class="fetch-status" id="fetch-status"></div>
@@ -691,7 +479,7 @@
   </div>
 
   <div class="section-title" style="margin-top:1.5rem">Defensive &amp; market stats</div>
-  <div class="outcomes" id="def-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem">
+  <div class="outcomes" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem">
     <div class="oc">
       <div class="oc-lbl">BTTS</div>
       <div class="oc-pct" id="btts-pct">—</div>
@@ -708,7 +496,7 @@
       <div class="oc-imp" id="u25-sub">Total goals market</div>
     </div>
   </div>
-  <div class="outcomes" id="cs-stats" style="grid-template-columns:repeat(2,1fr);margin-bottom:1.5rem">
+  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:1.5rem">
     <div class="oc">
       <div class="oc-bar" id="hcs-bar" style="background:var(--blue);width:0%"></div>
       <div class="oc-lbl" id="hcs-lbl">Home clean sheet</div>
@@ -789,7 +577,6 @@
     </div>
   </div>
 
-
   <div class="section-title">Most likely scorelines</div>
   <div class="scorelines" id="bars"></div>
 
@@ -800,7 +587,6 @@
   <div id="matrix"></div>
   <div class="matrix-legend" id="legend"></div>
 
-  <!-- History -->
   <div class="history-wrap" id="history-wrap">
     <div class="history-header">
       <div class="section-title" style="margin-bottom:0">Search history</div>
@@ -810,7 +596,6 @@
     <div id="history-list"><div class="history-empty">No searches yet — run a calculation to save it here.</div></div>
   </div>
 
-  <!-- Acca builder -->
   <div class="acca-wrap" id="acca-wrap">
     <div class="acca-header">
       <h3>Acca builder</h3>
@@ -865,20 +650,18 @@ function updateTitle() {
 }
 
 function swap() {
-  const ht = $('hteam').value,  at = $('ateam').value;
-  const hx = $('hxg').value,    ax = $('axg').value;
-  const hxa = $('hxga').value,  axa = $('axga').value;
-  const ho = $('hodds').value,  ao = $('aodds').value;
-  $('hteam').value = at;  $('ateam').value = ht;
-  $('hxg').value   = ax;  $('axg').value   = hx;
-  $('hxga').value  = axa; $('axga').value  = hxa;
-  $('hodds').value = ao;  $('aodds').value = ho;
+  const ht = $('hteam').value, at = $('ateam').value;
+  const hx = $('hxg').value,   ax = $('axg').value;
+  const hxa = $('hxga').value, axa = $('axga').value;
+  const ho = $('hodds').value, ao = $('aodds').value;
+  $('hteam').value = at; $('ateam').value = ht;
+  $('hxg').value = ax;   $('axg').value = hx;
+  $('hxga').value = axa; $('axga').value = hxa;
+  $('hodds').value = ao; $('aodds').value = ho;
   updateTitle(); run();
 }
 
-// ── Backend fetch ────────────────────────────────────────
-
-const SERVER = "https://wc-engine-production.up.railway.app";
+const SERVER = "https://web-production-c0742.up.railway.app";
 
 async function fetchData() {
   const home = $('hteam').value;
@@ -890,53 +673,50 @@ async function fetchData() {
   btn.textContent = 'Fetching...';
   status.className = 'fetch-status';
   status.textContent = 'Contacting server...';
+  $('data-warnings').textContent = '';
 
   try {
     const res = await fetch(`${SERVER}/api/match?home=${encodeURIComponent(home)}&away=${encodeURIComponent(away)}`);
     const data = await res.json();
-
     let msgs = [];
 
-    // xG
     if (data.xg && !data.xg.error) {
       $('hxg').value = data.xg.home_lambda;
       $('axg').value = data.xg.away_lambda;
-      // Check if either team used goals fallback
+
       const hFallback = data.xg.home.fallback;
       const aFallback = data.xg.away.fallback;
-      let xgMsg = `xG loaded (last 10 internationals)`;
+      let xgMsg = 'xG loaded (last 10 internationals)';
       if (hFallback || aFallback) {
-        const fallbackTeams = [];
-        if (hFallback) fallbackTeams.push(data.xg.home.team);
-        if (aFallback) fallbackTeams.push(data.xg.away.team);
-        xgMsg = `xG loaded · ⚠ ${fallbackTeams.join(', ')} using goals as xG proxy (limited data)`;
+        const ft = [];
+        if (hFallback) ft.push(data.xg.home.team);
+        if (aFallback) ft.push(data.xg.away.team);
+        xgMsg = `xG loaded · ⚠ ${ft.join(', ')} using goals as xG proxy (limited data)`;
       }
       msgs.push(xgMsg);
 
-      // Build data warnings
       const warnings = [];
-      const checkMissing = (teamData, teamLabel) => {
+      const checkMissing = (td, label) => {
         const missing = [];
-        if (teamData.corners_for == null)      missing.push('corners');
-        if (teamData.yellow_cards_for == null) missing.push('yellow cards');
-        if (teamData.shots_for == null)        missing.push('shots');
-        if (teamData.fouls_for == null)        missing.push('fouls');
-        if (missing.length > 0) warnings.push(`${teamLabel}: no ${missing.join(', ')} data available`);
+        if (td.corners_for == null)      missing.push('corners');
+        if (td.yellow_cards_for == null) missing.push('yellow cards');
+        if (td.shots_for == null)        missing.push('shots');
+        if (td.fouls_for == null)        missing.push('fouls');
+        if (missing.length > 0) warnings.push(`${label}: no ${missing.join(', ')} data`);
       };
       checkMissing(data.xg.home, data.xg.home.team);
       checkMissing(data.xg.away, data.xg.away.team);
       $('data-warnings').textContent = warnings.join(' · ');
-      // Populate corners and cards
-      const h = data.xg.home, a = data.xg.away;
-      const hName = data.xg.home.team, aName = data.xg.away.team;
 
-      // Corners
+      const h = data.xg.home, a = data.xg.away;
+      const hName = h.team, aName = a.team;
+
       $('hc-lbl').textContent = hName + ' corners';
       $('ac-lbl').textContent = aName + ' corners';
       if (h.corners_for != null) {
         $('hc-avg').textContent = h.corners_for.toFixed(1);
         $('hc-sub').textContent = `For: ${h.corners_for} · Against: ${h.corners_against}`;
-        const maxC = Math.max(h.corners_for, a.corners_for, 1);
+        const maxC = Math.max(h.corners_for, a.corners_for || 0, 1);
         $('hc-bar').style.width = (h.corners_for / maxC * 100).toFixed(0) + '%';
       }
       if (a.corners_for != null) {
@@ -946,27 +726,18 @@ async function fetchData() {
         $('ac-bar').style.width = (a.corners_for / maxC * 100).toFixed(0) + '%';
       }
 
-      // Yellow cards
       $('hy-lbl').textContent = hName + ' yellows';
       $('ay-lbl').textContent = aName + ' yellows';
-      if (h.yellow_cards_for != null) {
-        $('hy-avg').textContent = h.yellow_cards_for.toFixed(1);
-        $('hy-sub').textContent = `Conceded: ${h.yellow_cards_against ?? '—'} avg`;
-      }
-      if (a.yellow_cards_for != null) {
-        $('ay-avg').textContent = a.yellow_cards_for.toFixed(1);
-        $('ay-sub').textContent = `Conceded: ${a.yellow_cards_against ?? '—'} avg`;
-      }
+      if (h.yellow_cards_for != null) { $('hy-avg').textContent = h.yellow_cards_for.toFixed(1); $('hy-sub').textContent = 'Avg per match'; }
+      if (a.yellow_cards_for != null) { $('ay-avg').textContent = a.yellow_cards_for.toFixed(1); $('ay-sub').textContent = 'Avg per match'; }
 
-      // Red cards — show 0 if none
       $('hr-lbl').textContent = hName + ' reds';
       $('ar-lbl').textContent = aName + ' reds';
       $('hr-avg').textContent = (h.red_cards_for != null && h.red_cards_for > 0) ? h.red_cards_for.toFixed(2) : '0';
-      $('hr-sub').textContent = 'Avg per match (last 10)';
       $('ar-avg').textContent = (a.red_cards_for != null && a.red_cards_for > 0) ? a.red_cards_for.toFixed(2) : '0';
-      $('ar-sub').textContent = 'Avg per match (last 10)';
+      $('hr-sub').textContent = 'Avg per match';
+      $('ar-sub').textContent = 'Avg per match';
 
-      // Shots
       $('hs-lbl').textContent = hName + ' shots';
       $('as-lbl').textContent = aName + ' shots';
       if (h.shots_for != null) {
@@ -982,29 +753,22 @@ async function fetchData() {
         $('as-bar').style.width = (a.shots_for / maxS * 100).toFixed(0) + '%';
       }
 
-      // Fouls
       $('hf-lbl').textContent = hName + ' fouls';
       $('af-lbl').textContent = aName + ' fouls';
-      if (h.fouls_for != null) {
-        $('hf-avg').textContent = h.fouls_for.toFixed(1);
-        $('hf-sub').textContent = `Drawn: ${h.fouls_against ?? '—'} avg`;
-      }
-      if (a.fouls_for != null) {
-        $('af-avg').textContent = a.fouls_for.toFixed(1);
-        $('af-sub').textContent = `Drawn: ${a.fouls_against ?? '—'} avg`;
-      }
+      if (h.fouls_for != null) { $('hf-avg').textContent = h.fouls_for.toFixed(1); $('hf-sub').textContent = 'Avg per match'; }
+      if (a.fouls_for != null) { $('af-avg').textContent = a.fouls_for.toFixed(1); $('af-sub').textContent = 'Avg per match'; }
+
     } else if (data.xg?.error) {
       msgs.push(`xG: ${data.xg.error}`);
     }
 
-    // Odds
     if (data.odds && !data.odds.error) {
       $('hodds').value = data.odds.home_odds ? decimalToFraction(data.odds.home_odds) : $('hodds').value;
       $('dodds').value = data.odds.draw_odds ? decimalToFraction(data.odds.draw_odds) : $('dodds').value;
       $('aodds').value = data.odds.away_odds ? decimalToFraction(data.odds.away_odds) : $('aodds').value;
-      updateHint('hodds', 'hodds-hint');
-      updateHint('dodds', 'dodds-hint');
-      updateHint('aodds', 'aodds-hint');
+      updateHint('hodds','hodds-hint');
+      updateHint('dodds','dodds-hint');
+      updateHint('aodds','aodds-hint');
       msgs.push(`odds from ${data.odds.bookmaker}`);
     } else if (data.odds?.error) {
       msgs.push(`odds: ${data.odds.error}`);
@@ -1017,36 +781,27 @@ async function fetchData() {
 
   } catch (e) {
     status.className = 'fetch-status err';
-    status.textContent = 'Server not running — start server.py first (python server.py)';
+    status.textContent = 'Server not running — start server.py first';
   } finally {
     btn.classList.remove('loading');
     btn.textContent = '↓ Fetch xG & odds';
   }
 }
 
-// ── End backend fetch ─────────────────────────────────────
-
-
 function decimalToFraction(decimal) {
-  // Convert decimal odds to fractional (e.g. 4.0 -> "3/1", 2.5 -> "3/2")
   const numerator = decimal - 1;
-  // Find a good fraction representation
   const tolerance = 0.01;
   for (let denom = 1; denom <= 20; denom++) {
     const num = Math.round(numerator * denom);
     if (Math.abs(num / denom - numerator) < tolerance) {
-      // Simplify by GCD
       const g = gcd(num, denom);
       return `${num/g}/${denom/g}`;
     }
   }
-  // Fallback: round to 2 decimal places
   return decimal.toFixed(2);
 }
 
-function gcd(a, b) {
-  return b === 0 ? a : gcd(b, a % b);
-}
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
 
 function parseOdds(val) {
   val = val.trim();
@@ -1067,23 +822,14 @@ function updateHint(inputId, hintId) {
   const hint = document.getElementById(hintId);
   if (!hint) return;
   const dec = parseOdds(el.value);
-  if (isNaN(dec)) {
-    hint.textContent = 'invalid';
-    el.classList.add('invalid');
-  } else {
-    hint.textContent = '= ' + dec.toFixed(2);
-    el.classList.remove('invalid');
-  }
+  if (isNaN(dec)) { hint.textContent = 'invalid'; el.classList.add('invalid'); }
+  else { hint.textContent = '= ' + dec.toFixed(2); el.classList.remove('invalid'); }
 }
 
 $('edge-sl').oninput = () => { $('edge-v').textContent = $('edge-sl').value + '%'; run(); };
-$('ha').onchange = run;
 ['hxg','axg','hxga','axga'].forEach(id => $(id).addEventListener('input', run));
 ['hodds','dodds','aodds'].forEach(id => {
-  $(id).addEventListener('input', () => {
-    updateHint(id, id + '-hint');
-    run();
-  });
+  $(id).addEventListener('input', () => { updateHint(id, id + '-hint'); run(); });
 });
 
 function poisson(lam, k) {
@@ -1100,13 +846,11 @@ function setBadge(el, edge, min) {
 }
 
 function run() {
-  const ha   = 1.0; // Neutral venues — no home advantage
+  const ha   = 1.0;
   const hxgF = parseFloat($('hxg').value)  || 1.5;
   const axgF = parseFloat($('axg').value)  || 1.5;
   const hxgA = parseFloat($('hxga').value) || 1.2;
   const axgA = parseFloat($('axga').value) || 1.2;
-
-  // Blend attack vs opposition defence for more accurate lambdas
   const hl = ((hxgF + axgA) / 2) * ha;
   const al = ((axgF + hxgA) / 2) / ha;
   const hOdds = parseOdds($('hodds').value);
@@ -1149,22 +893,17 @@ function run() {
   setBadge($('dbadge'), dr-dimp, minEdge);
   setBadge($('abadge'), aw-aimp, minEdge);
 
-  // ── Defensive & market stats ──
-  // BTTS: both teams score at least 1
-  let btts = 0, o25 = 0, u25 = 0;
+  let btts = 0, o25 = 0, u25 = 0, hCS = 0, aCS = 0;
   for (let h = 0; h <= MAX; h++) {
     for (let a = 0; a <= MAX; a++) {
       const p = grid[h][a];
       if (h >= 1 && a >= 1) btts += p;
-      if (h + a > 2.5)      o25  += p;
-      if (h + a < 2.5)      u25  += p;
+      if (h + a > 2.5) o25 += p;
+      if (h + a < 2.5) u25 += p;
     }
+    hCS += grid[h][0];
   }
-
-  // Clean sheet: team concedes 0
-  let hCS = 0, aCS = 0;
-  for (let h = 0; h <= MAX; h++) hCS += grid[h][0]; // home keeps clean sheet (away scores 0)
-  for (let a = 0; a <= MAX; a++) aCS += grid[0][a]; // away keeps clean sheet (home scores 0)
+  for (let a = 0; a <= MAX; a++) aCS += grid[0][a];
 
   $('btts-pct').textContent = (btts*100).toFixed(1) + '%';
   $('o25-pct').textContent  = (o25*100).toFixed(1)  + '%';
@@ -1179,11 +918,8 @@ function run() {
   $('acs-pct').textContent = (aCS*100).toFixed(1) + '%';
   $('hcs-bar').style.width = (hCS*100).toFixed(1) + '%';
   $('acs-bar').style.width = (aCS*100).toFixed(1) + '%';
-
-  const hxgF2 = parseFloat($('hxg').value), hxgA2 = parseFloat($('hxga').value);
-  const axgF2 = parseFloat($('axg').value), axgA2 = parseFloat($('axga').value);
-  $('hcs-sub').textContent = `xG for ${hxgF2.toFixed(2)} · xGA ${hxgA2.toFixed(2)}`;
-  $('acs-sub').textContent = `xG for ${axgF2.toFixed(2)} · xGA ${axgA2.toFixed(2)}`;
+  $('hcs-sub').textContent = `xG for ${hxgF.toFixed(2)} · xGA ${hxgA.toFixed(2)}`;
+  $('acs-sub').textContent = `xG for ${axgF.toFixed(2)} · xGA ${axgA.toFixed(2)}`;
 
   const scores = [];
   for (let h = 0; h <= MAX; h++)
@@ -1221,7 +957,6 @@ function run() {
     <div class="leg-item"><div class="leg-dot" style="background:#3B6D11"></div>Draw</div>
     <div class="leg-item"><div class="leg-dot" style="background:#A32D2D"></div>${aName} win</div>`;
 
-  // Store result so calculate() can save it to history
   window._lastResult = { hName, aName, hw, dr, aw, himp, dimp, aimp, minEdge };
 }
 
@@ -1230,8 +965,7 @@ function calculate() {
   if (!window._lastResult) return;
   const r = window._lastResult;
   const now = new Date();
-  const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
-                  ' · ' + now.toLocaleDateString([], {day:'numeric', month:'short'});
+  const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' · ' + now.toLocaleDateString([], {day:'numeric', month:'short'});
   saveHistory({
     home: r.hName, away: r.aName,
     hxg: $('hxg').value, axg: $('axg').value,
@@ -1243,28 +977,24 @@ function calculate() {
   });
 }
 
-// ── History & Acca ───────────────────────────────────────
-
-let history = JSON.parse(localStorage.getItem('pe_history') || '[]');
-let acca = JSON.parse(localStorage.getItem('pe_acca') || '[]');
+let history = JSON.parse(localStorage.getItem('wc_history') || '[]');
+let acca    = JSON.parse(localStorage.getItem('wc_acca')    || '[]');
 
 function saveHistory(entry) {
   history.unshift(entry);
   if (history.length > 20) history = history.slice(0, 20);
-  localStorage.setItem('pe_history', JSON.stringify(history));
+  localStorage.setItem('wc_history', JSON.stringify(history));
   renderHistory();
 }
 
 function clearHistory() {
   history = []; acca = [];
-  localStorage.removeItem('pe_history');
-  localStorage.removeItem('pe_acca');
-  renderHistory();
-  renderAcca();
+  localStorage.removeItem('wc_history');
+  localStorage.removeItem('wc_acca');
+  renderHistory(); renderAcca();
 }
 
 function loadFromHistory(entry) {
-  // Set teams
   $('hteam').value = entry.home;
   $('ateam').value = entry.away;
   $('hxg').value   = entry.hxg;
@@ -1281,50 +1011,33 @@ function loadFromHistory(entry) {
 }
 
 function addToAcca(entry, selection, odds) {
-  // Prevent duplicate matches
-  if (acca.find(l => l.home === entry.home && l.away === entry.away)) {
-    // Replace existing leg for same match
-    acca = acca.filter(l => !(l.home === entry.home && l.away === entry.away));
-  }
+  acca = acca.filter(l => !(l.home === entry.home && l.away === entry.away));
   acca.push({ home: entry.home, away: entry.away, selection, odds });
-  localStorage.setItem('pe_acca', JSON.stringify(acca));
+  localStorage.setItem('wc_acca', JSON.stringify(acca));
   renderAcca();
 }
 
 function removeAccaLeg(idx) {
   acca.splice(idx, 1);
-  localStorage.setItem('pe_acca', JSON.stringify(acca));
+  localStorage.setItem('wc_acca', JSON.stringify(acca));
   renderAcca();
 }
 
 function renderAcca() {
   const wrap = $('acca-wrap');
-  const legsEl = $('acca-legs');
-  const metaEl = $('acca-meta');
-  const totalEl = $('acca-total');
-  const probEl  = $('acca-prob');
-
-  if (acca.length === 0) {
-    wrap.classList.remove('visible');
-    return;
-  }
-
+  if (acca.length === 0) { wrap.classList.remove('visible'); return; }
   wrap.classList.add('visible');
-  metaEl.textContent = acca.length + (acca.length === 1 ? ' leg' : ' legs');
-
-  legsEl.innerHTML = acca.map((leg, i) => `
+  $('acca-meta').textContent = acca.length + (acca.length === 1 ? ' leg' : ' legs');
+  $('acca-legs').innerHTML = acca.map((leg, i) => `
     <div class="acca-leg">
       <div class="acca-leg-match">${leg.home} vs ${leg.away}</div>
       <div class="acca-leg-sel">${leg.selection}</div>
       <div class="acca-leg-odds">${leg.odds.toFixed(2)}</div>
       <button class="acca-leg-remove" onclick="removeAccaLeg(${i})">×</button>
-    </div>
-  `).join('');
-
+    </div>`).join('');
   const combined = acca.reduce((acc, leg) => acc * leg.odds, 1);
-  const impliedPct = (1 / combined * 100).toFixed(1);
-  totalEl.textContent = combined.toFixed(2);
-  probEl.textContent  = impliedPct + '%';
+  $('acca-total').textContent = combined.toFixed(2);
+  $('acca-prob').textContent  = (1 / combined * 100).toFixed(1) + '%';
 }
 
 function renderHistory() {
@@ -1333,213 +1046,76 @@ function renderHistory() {
     list.innerHTML = '<div class="history-empty">No searches yet — run a calculation to save it here.</div>';
     return;
   }
-
   list.innerHTML = history.map((e, i) => {
     const hEdge = ((e.hProb - e.hImp) * 100).toFixed(1);
     const dEdge = ((e.dProb - e.dImp) * 100).toFixed(1);
     const aEdge = ((e.aProb - e.aImp) * 100).toFixed(1);
-
-    function edgeClass(edge) {
-      return parseFloat(edge) >= e.minEdge * 100 ? 'val' : parseFloat(edge) <= -e.minEdge * 100 ? 'over' : '';
-    }
-
-    const hClass = edgeClass(hEdge);
-    const dClass = edgeClass(dEdge);
-    const aClass = edgeClass(aEdge);
-
-    const hLabel = e.home + ' win';
-    const dLabel = 'Draw';
-    const aLabel = e.away + ' win';
-
+    const ec = edge => parseFloat(edge) >= e.minEdge * 100 ? 'val' : parseFloat(edge) <= -e.minEdge * 100 ? 'over' : '';
+    const hLabel = e.home + ' win', dLabel = 'Draw', aLabel = e.away + ' win';
     return `<div class="history-item" onclick="loadFromHistory(history[${i}])">
-      <div class="history-match">
-        <span>${e.home} vs ${e.away}</span>
-        <span class="history-time">${e.time}</span>
-      </div>
+      <div class="history-match"><span>${e.home} vs ${e.away}</span><span class="history-time">${e.time}</span></div>
       <div class="history-stats">
-        <span class="hstat ${hClass}">
-          ${hLabel} ${(e.hProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${hLabel}', ${parseOdds(e.hodds).toFixed(4)})">+ acca</button>
-        </span>
-        <span class="hstat ${dClass}">
-          ${dLabel} ${(e.dProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${dLabel}', ${parseOdds(e.dodds).toFixed(4)})">+ acca</button>
-        </span>
-        <span class="hstat ${aClass}">
-          ${aLabel} ${(e.aProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${aLabel}', ${parseOdds(e.aodds).toFixed(4)})">+ acca</button>
-        </span>
-      </div>
-    </div>`;
+        <span class="hstat ${ec(hEdge)}">${hLabel} ${(e.hProb*100).toFixed(1)}%
+          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${hLabel}', ${parseOdds(e.hodds).toFixed(4)})">+ acca</button></span>
+        <span class="hstat ${ec(dEdge)}">${dLabel} ${(e.dProb*100).toFixed(1)}%
+          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${dLabel}', ${parseOdds(e.dodds).toFixed(4)})">+ acca</button></span>
+        <span class="hstat ${ec(aEdge)}">${aLabel} ${(e.aProb*100).toFixed(1)}%
+          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${aLabel}', ${parseOdds(e.aodds).toFixed(4)})">+ acca</button></span>
+      </div></div>`;
   }).join('');
 }
 
-// ── End History & Acca ────────────────────────────────────
-
-
-
-// ── CSV Export ───────────────────────────────────────────
-
 function exportCSV() {
-  if (history.length === 0) {
-    alert('No searches to export yet — run some calculations first.');
-    return;
-  }
-
-  const headers = [
-    'Home Team',
-    'Away Team',
-    'Home xG',
-    'Away xG',
-    'Home xGA',
-    'Away xGA',
-    'Home Odds',
-    'Draw Odds',
-    'Away Odds',
-    'Model Home %',
-    'Model Draw %',
-    'Model Away %',
-    'Implied Home %',
-    'Implied Draw %',
-    'Implied Away %',
-    'Home Edge %',
-    'Draw Edge %',
-    'Away Edge %',
-    'Home Value',
-    'Draw Value',
-    'Away Value',
-    'Actual Result'
-  ];
-
+  if (history.length === 0) { alert('No searches to export yet.'); return; }
+  const headers = ['Home Team','Away Team','Home xG','Away xG','Home xGA','Away xGA','Home Odds','Draw Odds','Away Odds','Model Home %','Model Draw %','Model Away %','Implied Home %','Implied Draw %','Implied Away %','Home Edge %','Draw Edge %','Away Edge %','Home Value','Draw Value','Away Value','Actual Result'];
   const rows = history.map(e => {
     const minEdgePct = (e.minEdge || 0.05) * 100;
     const hEdge = ((e.hProb - e.hImp) * 100).toFixed(1);
     const dEdge = ((e.dProb - e.dImp) * 100).toFixed(1);
     const aEdge = ((e.aProb - e.aImp) * 100).toFixed(1);
-
-    function valueLabel(edge) {
-      if (parseFloat(edge) >= minEdgePct) return 'VALUE';
-      if (parseFloat(edge) <= -minEdgePct) return 'OVERPRICED';
-      return 'FAIR';
-    }
-
-    const cells = [
-      e.home,
-      e.away,
-      e.hxg || '',
-      e.axg || '',
-      e.hxga || '',
-      e.axga || '',
-      e.hodds ? `'${e.hodds}` : '',
-      e.dodds ? `'${e.dodds}` : '',
-      e.aodds ? `'${e.aodds}` : '',
-      (e.hProb * 100).toFixed(1) + '%',
-      (e.dProb * 100).toFixed(1) + '%',
-      (e.aProb * 100).toFixed(1) + '%',
-      (e.hImp * 100).toFixed(1) + '%',
-      (e.dImp * 100).toFixed(1) + '%',
-      (e.aImp * 100).toFixed(1) + '%',
-      hEdge + '%',
-      dEdge + '%',
-      aEdge + '%',
-      valueLabel(hEdge),
-      valueLabel(dEdge),
-      valueLabel(aEdge),
-      ''
-    ];
-
-    return cells.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+    const vl = edge => parseFloat(edge) >= minEdgePct ? 'VALUE' : parseFloat(edge) <= -minEdgePct ? 'OVERPRICED' : 'FAIR';
+    return [e.home, e.away, e.hxg||'', e.axg||'', e.hxga||'', e.axga||'',
+      e.hodds ? `'${e.hodds}` : '', e.dodds ? `'${e.dodds}` : '', e.aodds ? `'${e.aodds}` : '',
+      (e.hProb*100).toFixed(1)+'%', (e.dProb*100).toFixed(1)+'%', (e.aProb*100).toFixed(1)+'%',
+      (e.hImp*100).toFixed(1)+'%', (e.dImp*100).toFixed(1)+'%', (e.aImp*100).toFixed(1)+'%',
+      hEdge+'%', dEdge+'%', aEdge+'%', vl(hEdge), vl(dEdge), vl(aEdge), ''
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
   });
-
-  const bom = '﻿'; // UTF-8 BOM for Excel compatibility
+  const bom = '\uFEFF';
   const csv = bom + [headers.map(h => `"${h}"`).join(','), ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `pricing-engine-${new Date().toISOString().slice(0,10)}.csv`;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `wc2026-engine-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-// ── End CSV Export ────────────────────────────────────────
-
-// ── Fixture picker ───────────────────────────────────────
-
-// Map API-Football team names to our dropdown values
 const TEAM_NAME_MAP = {
-  "Algeria": "Algeria",
-  "Argentina": "Argentina",
-  "Australia": "Australia",
-  "Austria": "Austria",
-  "Belgium": "Belgium",
-  "Bolivia": "Bolivia",
-  "Bosnia & Herzegovina": "Bosnia & Herzegovina",
-  "Brazil": "Brazil",
-  "Cameroon": "Cameroon",
-  "Canada": "Canada",
-  "Cape Verde Islands": "Cape Verde Islands",
-  "Cape Verde": "Cape Verde Islands",
-  "Chile": "Chile",
-  "Colombia": "Colombia",
-  "Costa Rica": "Costa Rica",
-  "Croatia": "Croatia",
-  "Curaçao": "Curaçao",
-  "Curacao": "Curaçao",
-  "Czech Republic": "Czech Republic",
-  "Denmark": "Denmark",
-  "Ecuador": "Ecuador",
-  "Egypt": "Egypt",
-  "England": "England",
-  "France": "France",
-  "Germany": "Germany",
-  "Ghana": "Ghana",
-  "Greece": "Greece",
-  "Haiti": "Haiti",
-  "Honduras": "Honduras",
-  "Hungary": "Hungary",
-  "Iran": "Iran",
-  "Iraq": "Iraq",
-  "Ivory Coast": "Ivory Coast",
-  "Jamaica": "Jamaica",
-  "Japan": "Japan",
-  "Jordan": "Jordan",
-  "Kenya": "Kenya",
-  "Kuwait": "Kuwait",
-  "Mali": "Mali",
-  "Mexico": "Mexico",
-  "Morocco": "Morocco",
-  "Netherlands": "Netherlands",
-  "New Zealand": "New Zealand",
-  "Nigeria": "Nigeria",
-  "Norway": "Norway",
-  "Panama": "Panama",
-  "Paraguay": "Paraguay",
-  "Peru": "Peru",
-  "Poland": "Poland",
-  "Portugal": "Portugal",
-  "Qatar": "Qatar",
-  "Romania": "Romania",
-  "Saudi Arabia": "Saudi Arabia",
-  "Scotland": "Scotland",
-  "Senegal": "Senegal",
-  "Serbia": "Serbia",
-  "Slovakia": "Slovakia",
-  "Slovenia": "Slovenia",
-  "South Africa": "South Africa",
-  "South Korea": "South Korea",
-  "Spain": "Spain",
-  "Sweden": "Sweden",
-  "Switzerland": "Switzerland",
-  "Trinidad and Tobago": "Trinidad and Tobago",
-  "Tunisia": "Tunisia",
-  "Türkiye": "Türkiye",
-  "Turkey": "Türkiye",
-  "Ukraine": "Ukraine",
-  "United States": "United States",
-  "USA": "United States",
-  "Uruguay": "Uruguay",
-  "Venezuela": "Venezuela",
+  "Algeria":"Algeria","Argentina":"Argentina","Australia":"Australia","Austria":"Austria",
+  "Belgium":"Belgium","Bolivia":"Bolivia","Bosnia & Herzegovina":"Bosnia & Herzegovina",
+  "Brazil":"Brazil","Cameroon":"Cameroon","Canada":"Canada",
+  "Cape Verde Islands":"Cape Verde Islands","Cape Verde":"Cape Verde Islands",
+  "Chile":"Chile","Colombia":"Colombia","Costa Rica":"Costa Rica","Croatia":"Croatia",
+  "Curaçao":"Curaçao","Curacao":"Curaçao","Czech Republic":"Czech Republic",
+  "Denmark":"Denmark","Ecuador":"Ecuador","Egypt":"Egypt","England":"England",
+  "France":"France","Germany":"Germany","Ghana":"Ghana","Greece":"Greece",
+  "Haiti":"Haiti","Honduras":"Honduras","Hungary":"Hungary","Iran":"Iran",
+  "Iraq":"Iraq","Ivory Coast":"Ivory Coast","Jamaica":"Jamaica","Japan":"Japan",
+  "Jordan":"Jordan","Kenya":"Kenya","Kuwait":"Kuwait","Mali":"Mali",
+  "Mexico":"Mexico","Morocco":"Morocco","Netherlands":"Netherlands",
+  "New Zealand":"New Zealand","Nigeria":"Nigeria","Norway":"Norway",
+  "Panama":"Panama","Paraguay":"Paraguay","Peru":"Peru","Poland":"Poland",
+  "Portugal":"Portugal","Qatar":"Qatar","Romania":"Romania",
+  "Saudi Arabia":"Saudi Arabia","Scotland":"Scotland","Senegal":"Senegal",
+  "Serbia":"Serbia","Slovakia":"Slovakia","Slovenia":"Slovenia",
+  "South Africa":"South Africa","South Korea":"South Korea","Spain":"Spain",
+  "Sweden":"Sweden","Switzerland":"Switzerland",
+  "Trinidad and Tobago":"Trinidad and Tobago","Tunisia":"Tunisia",
+  "Türkiye":"Türkiye","Turkey":"Türkiye","Ukraine":"Ukraine",
+  "United States":"United States","USA":"United States",
+  "Uruguay":"Uruguay","Venezuela":"Venezuela",
 };
 
 let fixturesData = [];
@@ -1549,12 +1125,10 @@ async function loadFixtures() {
   try {
     const res = await fetch(`${SERVER}/api/fixtures`);
     const data = await res.json();
-
     if (data.error || !data.fixtures || data.fixtures.length === 0) {
       list.innerHTML = '<div class="fixture-loading">No upcoming fixtures found.</div>';
       return;
     }
-
     fixturesData = data.fixtures;
     renderFixtures();
   } catch (e) {
@@ -1566,7 +1140,6 @@ function renderFixtures() {
   const list = $('fixture-list');
   const currentHome = $('hteam').value;
   const currentAway = $('ateam').value;
-
   list.innerHTML = fixturesData.map((f, i) => {
     const home = TEAM_NAME_MAP[f.home] || f.home;
     const away = TEAM_NAME_MAP[f.away] || f.away;
@@ -1585,21 +1158,16 @@ function selectFixture(i) {
   const f = fixturesData[i];
   const home = TEAM_NAME_MAP[f.home] || f.home;
   const away = TEAM_NAME_MAP[f.away] || f.away;
-
   $('hteam').value = home;
   $('ateam').value = away;
-  updateTitle();
-  run();
-  renderFixtures(); // update active state
+  updateTitle(); run(); renderFixtures();
 }
-
-// ── End fixture picker ────────────────────────────────────
 
 buildDropdowns();
 updateTitle();
-updateHint('hodds', 'hodds-hint');
-updateHint('dodds', 'dodds-hint');
-updateHint('aodds', 'aodds-hint');
+updateHint('hodds','hodds-hint');
+updateHint('dodds','dodds-hint');
+updateHint('aodds','aodds-hint');
 renderHistory();
 renderAcca();
 run();
