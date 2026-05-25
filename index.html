@@ -689,7 +689,7 @@ async function fetchData() {
 
       const hFallback = data.xg.home.fallback;
       const aFallback = data.xg.away.fallback;
-      let xgMsg = 'xG loaded (last 10 internationals)';
+      let xgMsg = 'xG loaded (last 20 internationals)';
       if (hFallback || aFallback) {
         const ft = [];
         if (hFallback) ft.push(data.xg.home.team);
