@@ -831,16 +831,17 @@
 </div>
 <script>
 const TEAMS = [
-  "Argentina","Australia","Austria","Belgium","Bolivia","Brazil",
-  "Cameroon","Canada","Chile","Colombia","Costa Rica","Croatia",
-  "Czech Republic","Denmark","Ecuador","Egypt","England","France",
-  "Germany","Ghana","Greece","Honduras","Hungary","Iran",
-  "Italy","Jamaica","Japan","Kenya","Kuwait","Mali",
-  "Mexico","Morocco","Netherlands","New Zealand","Nigeria","Norway",
-  "Panama","Paraguay","Peru","Poland","Portugal","Qatar",
-  "Romania","Saudi Arabia","Senegal","Serbia","Slovakia","Slovenia",
-  "South Korea","Spain","Sweden","Switzerland","Trinidad and Tobago",
-  "Tunisia","Ukraine","United States","Uruguay","Venezuela"
+  "Algeria","Argentina","Australia","Austria","Belgium","Bolivia",
+  "Bosnia & Herzegovina","Brazil","Cameroon","Canada","Cape Verde Islands",
+  "Chile","Colombia","Costa Rica","Croatia","Curaçao","Czech Republic",
+  "Denmark","Ecuador","Egypt","England","France","Germany","Ghana",
+  "Greece","Haiti","Honduras","Hungary","Iran","Iraq","Ivory Coast",
+  "Jamaica","Japan","Jordan","Kenya","Kuwait","Mali","Mexico","Morocco",
+  "Netherlands","New Zealand","Nigeria","Norway","Panama","Paraguay",
+  "Peru","Poland","Portugal","Qatar","Romania","Saudi Arabia","Scotland",
+  "Senegal","Serbia","Slovakia","Slovenia","South Africa","South Korea",
+  "Spain","Sweden","Switzerland","Trinidad and Tobago","Tunisia","Türkiye",
+  "Ukraine","United States","Uruguay","Venezuela"
 ].sort();
 
 const $ = id => document.getElementById(id);
@@ -876,7 +877,7 @@ function swap() {
 
 // ── Backend fetch ────────────────────────────────────────
 
-const SERVER = "https://web-production-c0742.up.railway.app";
+const SERVER = "https://wc-engine-production.up.railway.app";
 
 async function fetchData() {
   const home = $('hteam').value;
@@ -1446,18 +1447,24 @@ function exportCSV() {
 
 // Map API-Football team names to our dropdown values
 const TEAM_NAME_MAP = {
+  "Algeria": "Algeria",
   "Argentina": "Argentina",
   "Australia": "Australia",
   "Austria": "Austria",
   "Belgium": "Belgium",
   "Bolivia": "Bolivia",
+  "Bosnia & Herzegovina": "Bosnia & Herzegovina",
   "Brazil": "Brazil",
   "Cameroon": "Cameroon",
   "Canada": "Canada",
+  "Cape Verde Islands": "Cape Verde Islands",
+  "Cape Verde": "Cape Verde Islands",
   "Chile": "Chile",
   "Colombia": "Colombia",
   "Costa Rica": "Costa Rica",
   "Croatia": "Croatia",
+  "Curaçao": "Curaçao",
+  "Curacao": "Curaçao",
   "Czech Republic": "Czech Republic",
   "Denmark": "Denmark",
   "Ecuador": "Ecuador",
@@ -1467,12 +1474,15 @@ const TEAM_NAME_MAP = {
   "Germany": "Germany",
   "Ghana": "Ghana",
   "Greece": "Greece",
+  "Haiti": "Haiti",
   "Honduras": "Honduras",
   "Hungary": "Hungary",
   "Iran": "Iran",
-  "Italy": "Italy",
+  "Iraq": "Iraq",
+  "Ivory Coast": "Ivory Coast",
   "Jamaica": "Jamaica",
   "Japan": "Japan",
+  "Jordan": "Jordan",
   "Kenya": "Kenya",
   "Kuwait": "Kuwait",
   "Mali": "Mali",
@@ -1490,16 +1500,20 @@ const TEAM_NAME_MAP = {
   "Qatar": "Qatar",
   "Romania": "Romania",
   "Saudi Arabia": "Saudi Arabia",
+  "Scotland": "Scotland",
   "Senegal": "Senegal",
   "Serbia": "Serbia",
   "Slovakia": "Slovakia",
   "Slovenia": "Slovenia",
+  "South Africa": "South Africa",
   "South Korea": "South Korea",
   "Spain": "Spain",
   "Sweden": "Sweden",
   "Switzerland": "Switzerland",
   "Trinidad and Tobago": "Trinidad and Tobago",
   "Tunisia": "Tunisia",
+  "Türkiye": "Türkiye",
+  "Turkey": "Türkiye",
   "Ukraine": "Ukraine",
   "United States": "United States",
   "USA": "United States",
