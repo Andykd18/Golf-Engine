@@ -148,7 +148,47 @@ def get_team_xg(team_name, last_n=10):
         time.sleep(0.5)
 
     if not xg_for_vals:
-        raise ValueError(f"No xG data found for {team_name}.")
+        # Fallback: use goals scored/conceded as proxy for xG
+        goals_for_vals     = []
+        goals_against_vals = []
+        for fixture in fixtures:
+            teams  = fixture.get("teams", {})
+            goals  = fixture.get("goals", {})
+            score  = fixture.get("score", {}).get("fulltime", {})
+            is_home = teams.get("home", {}).get("id") == team_id
+            if is_home:
+                gf = goals.get("home")
+                ga = goals.get("away")
+            else:
+                gf = goals.get("away")
+                ga = goals.get("home")
+            if gf is not None and ga is not None:
+                goals_for_vals.append(float(gf))
+                goals_against_vals.append(float(ga))
+
+        if not goals_for_vals:
+            raise ValueError(f"No data found for {team_name}.")
+
+        def weighted_avg_goals(lst):
+            if not lst: return None
+            n = len(lst)
+            weights = list(range(1, n + 1))
+            total_weight = sum(weights)
+            return round(sum(v * w for v, w in zip(lst, weights)) / total_weight, 3)
+
+        return {
+            "team":             team_name,
+            "xg_for":           weighted_avg_goals(goals_for_vals),
+            "xg_against":       weighted_avg_goals(goals_against_vals),
+            "matches_used":     len(goals_for_vals),
+            "fallback":         True,
+            "corners_for":      None,
+            "corners_against":  None,
+            "yellow_cards_for": None,
+            "red_cards_for":    None,
+            "shots_for":        None,
+            "fouls_for":        None,
+        }
 
     def weighted_avg(lst):
         """More recent games carry higher weight."""
@@ -166,6 +206,7 @@ def get_team_xg(team_name, last_n=10):
         "xg_for":               weighted_avg(xg_for_vals),
         "xg_against":           weighted_avg(xg_against_vals),
         "matches_used":         len(xg_for_vals),
+        "fallback":             False,
         "corners_for":          avg(corner_for_vals),
         "corners_against":      avg(corner_against_vals),
         "yellow_cards_for":     avg(yellow_for_vals),
