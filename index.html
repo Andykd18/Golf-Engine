@@ -663,6 +663,7 @@
     <button class="calc-btn" onclick="calculate()">Calculate</button>
   </div>
   <div class="fetch-status" id="fetch-status"></div>
+  <div id="data-warnings" style="font-size:11px;color:var(--red-text);margin-bottom:0.75rem;min-height:0;text-align:center;"></div>
 
   <div class="section-title">Outcome probabilities</div>
   <div class="outcomes">
@@ -911,6 +912,20 @@ async function fetchData() {
         xgMsg = `xG loaded · ⚠ ${fallbackTeams.join(', ')} using goals as xG proxy (limited data)`;
       }
       msgs.push(xgMsg);
+
+      // Build data warnings
+      const warnings = [];
+      const checkMissing = (teamData, teamLabel) => {
+        const missing = [];
+        if (teamData.corners_for == null)      missing.push('corners');
+        if (teamData.yellow_cards_for == null) missing.push('yellow cards');
+        if (teamData.shots_for == null)        missing.push('shots');
+        if (teamData.fouls_for == null)        missing.push('fouls');
+        if (missing.length > 0) warnings.push(`${teamLabel}: no ${missing.join(', ')} data available`);
+      };
+      checkMissing(data.xg.home, data.xg.home.team);
+      checkMissing(data.xg.away, data.xg.away.team);
+      $('data-warnings').textContent = warnings.join(' · ');
       // Populate corners and cards
       const h = data.xg.home, a = data.xg.away;
       const hName = data.xg.home.team, aName = data.xg.away.team;
