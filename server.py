@@ -154,7 +154,6 @@ def get_team_xg(team_name, last_n=10):
         for fixture in fixtures:
             teams  = fixture.get("teams", {})
             goals  = fixture.get("goals", {})
-            score  = fixture.get("score", {}).get("fulltime", {})
             is_home = teams.get("home", {}).get("id") == team_id
             if is_home:
                 gf = goals.get("home")
@@ -176,18 +175,21 @@ def get_team_xg(team_name, last_n=10):
             total_weight = sum(weights)
             return round(sum(v * w for v, w in zip(lst, weights)) / total_weight, 3)
 
+        def avg(lst):
+            return round(sum(lst) / len(lst), 2) if lst else None
+
         return {
-            "team":             team_name,
-            "xg_for":           weighted_avg_goals(goals_for_vals),
-            "xg_against":       weighted_avg_goals(goals_against_vals),
-            "matches_used":     len(goals_for_vals),
-            "fallback":         True,
-            "corners_for":      None,
-            "corners_against":  None,
-            "yellow_cards_for": None,
-            "red_cards_for":    None,
-            "shots_for":        None,
-            "fouls_for":        None,
+            "team":                 team_name,
+            "xg_for":               weighted_avg_goals(goals_for_vals),
+            "xg_against":           weighted_avg_goals(goals_against_vals),
+            "matches_used":         len(goals_for_vals),
+            "fallback":             True,
+            "corners_for":          avg(corner_for_vals),
+            "corners_against":      avg(corner_against_vals),
+            "yellow_cards_for":     avg(yellow_for_vals),
+            "red_cards_for":        avg(red_for_vals),
+            "shots_for":            avg(shots_for_vals),
+            "fouls_for":            avg(fouls_for_vals),
         }
 
     def weighted_avg(lst):
