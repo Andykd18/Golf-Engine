@@ -74,7 +74,7 @@ def get_team_xg(team_name, last_n=10):
     resp = requests.get(
         f"{APIFOOTBALL_BASE}/fixtures",
         headers=_headers(),
-        params={"team": team_id, "last": 30},
+        params={"team": team_id, "last": 20},
         timeout=15
     )
     resp.raise_for_status()
