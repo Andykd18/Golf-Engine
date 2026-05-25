@@ -877,7 +877,7 @@ function swap() {
 
 // ── Backend fetch ────────────────────────────────────────
 
-const SERVER = "https://web-production-c0742.up.railway.app";
+const SERVER = "https://wc-engine-production.up.railway.app";
 
 async function fetchData() {
   const home = $('hteam').value;
@@ -900,7 +900,17 @@ async function fetchData() {
     if (data.xg && !data.xg.error) {
       $('hxg').value = data.xg.home_lambda;
       $('axg').value = data.xg.away_lambda;
-      msgs.push(`xG loaded (last 10 internationals)`);
+      // Check if either team used goals fallback
+      const hFallback = data.xg.home.fallback;
+      const aFallback = data.xg.away.fallback;
+      let xgMsg = `xG loaded (last 10 internationals)`;
+      if (hFallback || aFallback) {
+        const fallbackTeams = [];
+        if (hFallback) fallbackTeams.push(data.xg.home.team);
+        if (aFallback) fallbackTeams.push(data.xg.away.team);
+        xgMsg = `xG loaded · ⚠ ${fallbackTeams.join(', ')} using goals as xG proxy (limited data)`;
+      }
+      msgs.push(xgMsg);
       // Populate corners and cards
       const h = data.xg.home, a = data.xg.away;
       const hName = data.xg.home.team, aName = data.xg.away.team;
@@ -1056,6 +1066,7 @@ function updateHint(inputId, hintId) {
 }
 
 $('edge-sl').oninput = () => { $('edge-v').textContent = $('edge-sl').value + '%'; run(); };
+$('ha').onchange = run;
 ['hxg','axg','hxga','axga'].forEach(id => $(id).addEventListener('input', run));
 ['hodds','dodds','aodds'].forEach(id => {
   $(id).addEventListener('input', () => {
