@@ -147,6 +147,11 @@ def get_team_xg(team_name, last_n=10):
 
         time.sleep(0.5)
 
+    # If fewer than 3 games have xG data, treat as unreliable and use goals fallback
+    if len(xg_for_vals) < 3:
+        xg_for_vals = []
+        xg_against_vals = []
+
     if not xg_for_vals:
         # Fallback: use goals scored/conceded as proxy for xG
         goals_for_vals     = []
