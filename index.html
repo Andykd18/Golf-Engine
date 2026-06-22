@@ -620,17 +620,17 @@
 </div>
 <script>
 const TEAMS = [
-  "Algeria","Argentina","Australia","Austria","Belgium","Bolivia",
-  "Bosnia & Herzegovina","Brazil","Cameroon","Canada","Cape Verde Islands",
-  "Chile","Colombia","Costa Rica","Croatia","Curaçao","Czech Republic",
-  "Denmark","Ecuador","Egypt","England","France","Germany","Ghana",
-  "Greece","Haiti","Honduras","Hungary","Iran","Iraq","Ivory Coast",
-  "Jamaica","Japan","Jordan","Kenya","Kuwait","Mali","Mexico","Morocco",
-  "Netherlands","New Zealand","Nigeria","Norway","Panama","Paraguay",
-  "Peru","Poland","Portugal","Qatar","Romania","Saudi Arabia","Scotland",
-  "Senegal","Serbia","Slovakia","Slovenia","South Africa","South Korea",
-  "Spain","Sweden","Switzerland","Trinidad and Tobago","Tunisia","Türkiye",
-  "Ukraine","United States","Uruguay","Venezuela"
+  "Algeria","Argentina","Australia","Austria",
+  "Belgium","Bosnia & Herzegovina","Brazil",
+  "Canada","Cape Verde Islands","Colombia","Croatia","Curaçao","Czechia",
+  "DR Congo","Ecuador","Egypt","England",
+  "France","Germany","Ghana","Haiti",
+  "Iran","Iraq","Ivory Coast","Jamaica","Japan","Jordan",
+  "Mexico","Morocco","Netherlands","New Zealand","Nigeria","Norway",
+  "Panama","Paraguay","Portugal","Qatar",
+  "Saudi Arabia","Scotland","Senegal","South Africa","South Korea","Spain","Sweden","Switzerland",
+  "Trinidad and Tobago","Tunisia","Türkiye",
+  "Ukraine","United States","Uruguay","Uzbekistan"
 ].sort();
 
 const $ = id => document.getElementById(id);
@@ -1097,28 +1097,25 @@ function exportCSV() {
 
 const TEAM_NAME_MAP = {
   "Algeria":"Algeria","Argentina":"Argentina","Australia":"Australia","Austria":"Austria",
-  "Belgium":"Belgium","Bolivia":"Bolivia","Bosnia & Herzegovina":"Bosnia & Herzegovina",
-  "Brazil":"Brazil","Cameroon":"Cameroon","Canada":"Canada",
-  "Cape Verde Islands":"Cape Verde Islands","Cape Verde":"Cape Verde Islands",
-  "Chile":"Chile","Colombia":"Colombia","Costa Rica":"Costa Rica","Croatia":"Croatia",
-  "Curaçao":"Curaçao","Curacao":"Curaçao","Czech Republic":"Czech Republic",
-  "Denmark":"Denmark","Ecuador":"Ecuador","Egypt":"Egypt","England":"England",
-  "France":"France","Germany":"Germany","Ghana":"Ghana","Greece":"Greece",
-  "Haiti":"Haiti","Honduras":"Honduras","Hungary":"Hungary","Iran":"Iran",
-  "Iraq":"Iraq","Ivory Coast":"Ivory Coast","Jamaica":"Jamaica","Japan":"Japan",
-  "Jordan":"Jordan","Kenya":"Kenya","Kuwait":"Kuwait","Mali":"Mali",
-  "Mexico":"Mexico","Morocco":"Morocco","Netherlands":"Netherlands",
-  "New Zealand":"New Zealand","Nigeria":"Nigeria","Norway":"Norway",
-  "Panama":"Panama","Paraguay":"Paraguay","Peru":"Peru","Poland":"Poland",
-  "Portugal":"Portugal","Qatar":"Qatar","Romania":"Romania",
+  "Belgium":"Belgium","Bosnia & Herzegovina":"Bosnia & Herzegovina","Brazil":"Brazil",
+  "Canada":"Canada","Cape Verde Islands":"Cape Verde Islands","Cape Verde":"Cape Verde Islands",
+  "Colombia":"Colombia","Congo DR":"DR Congo","Côte d'Ivoire":"Ivory Coast",
+  "Croatia":"Croatia","Curaçao":"Curaçao","Curacao":"Curaçao",
+  "Czechia":"Czechia","Czech Republic":"Czechia","DR Congo":"DR Congo",
+  "Ecuador":"Ecuador","Egypt":"Egypt","England":"England",
+  "France":"France","Germany":"Germany","Ghana":"Ghana","Haiti":"Haiti",
+  "Iran":"Iran","Iraq":"Iraq","Ivory Coast":"Ivory Coast",
+  "Jamaica":"Jamaica","Japan":"Japan","Jordan":"Jordan",
+  "Mexico":"Mexico","Morocco":"Morocco",
+  "Netherlands":"Netherlands","New Zealand":"New Zealand","Nigeria":"Nigeria","Norway":"Norway",
+  "Panama":"Panama","Paraguay":"Paraguay","Portugal":"Portugal","Qatar":"Qatar",
   "Saudi Arabia":"Saudi Arabia","Scotland":"Scotland","Senegal":"Senegal",
-  "Serbia":"Serbia","Slovakia":"Slovakia","Slovenia":"Slovenia",
-  "South Africa":"South Africa","South Korea":"South Korea","Spain":"Spain",
-  "Sweden":"Sweden","Switzerland":"Switzerland",
+  "South Africa":"South Africa","South Korea":"South Korea","Korea Republic":"South Korea",
+  "Spain":"Spain","Sweden":"Sweden","Switzerland":"Switzerland",
   "Trinidad and Tobago":"Trinidad and Tobago","Tunisia":"Tunisia",
-  "Türkiye":"Türkiye","Turkey":"Türkiye","Ukraine":"Ukraine",
-  "United States":"United States","USA":"United States",
-  "Uruguay":"Uruguay","Venezuela":"Venezuela",
+  "Türkiye":"Türkiye","Turkey":"Türkiye",
+  "Ukraine":"Ukraine","United States":"United States","USA":"United States",
+  "Uruguay":"Uruguay","Uzbekistan":"Uzbekistan",
 };
 
 let fixturesData = [];
