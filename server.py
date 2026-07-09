@@ -308,7 +308,14 @@ def api_fixtures():
             timeout=15
         )
         resp.raise_for_status()
-        fixtures = resp.json().get("response", [])
+        payload = resp.json()
+        api_errors = payload.get("errors")
+        fixtures = payload.get("response", [])
+
+        # API-Football often returns HTTP 200 with an empty response and the
+        # real problem in "errors" (rate limit, quota, bad param). Surface it.
+        if api_errors:
+            return jsonify({"error": api_errors, "results": payload.get("results")})
 
         result = []
         for f in fixtures:
@@ -326,6 +333,20 @@ def api_fixtures():
         return jsonify({"fixtures": result})
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+@app.route("/api/debug-key")
+def api_debug_key():
+    """Temporary diagnostic — confirms whether RAPIDAPI_KEY is actually
+    reaching this running process intact. Remove once fixtures are fixed."""
+    key = RAPIDAPI_KEY
+    return jsonify({
+        "length": len(key),
+        "first4": key[:4] if key else None,
+        "last4": key[-4:] if key else None,
+        "has_whitespace": key != key.strip(),
+        "repr": repr(key)[:50],
+    })
 
 
 @app.route("/api/xg")
