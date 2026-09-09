@@ -54,7 +54,11 @@ def espn_get(url, params=None):
         resp = requests.get(url, params=params, headers=headers, timeout=15)
         resp.raise_for_status()
         return resp.json()
+    except requests.exceptions.HTTPError:
+        print(f"[espn_get] HTTP {resp.status_code} for {resp.url}")
+        return None
     except Exception as e:
+        print(f"[espn_get] {type(e).__name__}: {e} — url={url} params={params}")
         return None
 
 
@@ -83,7 +87,7 @@ def get_event_field(event_id, tour="pga"):
     """Get full field for an event with current scores."""
     data = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
     if not data:
-        return []
+        return [], 0
 
     players = []
     leaderboard = data.get("events", [{}])[0].get("competitions", [{}])[0].get("competitors", [])
