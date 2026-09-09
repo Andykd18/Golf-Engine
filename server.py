@@ -1,10 +1,11 @@
 """
-World Cup 2026 Pricing Engine — Flask Backend
-Serves xG data from API-Football and match odds from The Odds API.
+Golf Pricing Engine — Flask Backend
+Uses ESPN unofficial API for player scores/results and The Odds API for markets.
+Calculates DIY strokes gained by comparing player scores vs field average.
 """
 
-import time
 import os
+import time
 import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -12,280 +13,261 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder=".", static_url_path="")
 CORS(app, origins="*")
 
-# ── Config ──────────────────────────────────────────────
-ODDS_API_KEY     = os.environ.get("ODDS_API_KEY", "")
-RAPIDAPI_KEY     = os.environ.get("RAPIDAPI_KEY", "")
-ODDS_API_BASE    = "https://api.the-odds-api.com/v4"
-APIFOOTBALL_BASE = "https://v3.football.api-sports.io"
-WC_LEAGUE_ID     = 1
-SEASON           = 2026
+ODDS_API_KEY  = os.environ.get("ODDS_API_KEY", "")
+ODDS_API_BASE = "https://api.the-odds-api.com/v4"
+ESPN_BASE     = "https://site.web.api.espn.com/apis/site/v2/sports/golf"
+ESPN_CORE     = "https://sports.core.api.espn.com/v2/sports/golf/leagues"
 
-# ── Team IDs (API-Football national team IDs) ────────────
-# These are fetched dynamically via /api/teams so we use a
-# lookup cache rather than hardcoding all 48
-TEAM_ID_CACHE = {}
+# Event tier weights for field strength adjustment
+EVENT_TIER = {
+    "masters": 1.5,
+    "the masters": 1.5,
+    "u.s. open": 1.5,
+    "us open": 1.5,
+    "open championship": 1.5,
+    "the open": 1.5,
+    "pga championship": 1.5,
+    "the players": 1.3,
+    "players championship": 1.3,
+    "genesis": 1.2,
+    "arnold palmer": 1.2,
+    "memorial": 1.2,
+    "travelers": 1.2,
+    "rbc canadian": 1.2,
+    "scottish open": 1.2,
+    "bmw pga": 1.2,
+}
 
-def _headers():
-    return {"x-apisports-key": RAPIDAPI_KEY}
+def get_event_tier(event_name):
+    name_lower = event_name.lower()
+    for key, weight in EVENT_TIER.items():
+        if key in name_lower:
+            return weight
+    return 1.0
 
 
-def get_team_id(team_name):
-    """Look up API-Football team ID for a national team."""
-    if team_name in TEAM_ID_CACHE:
-        return TEAM_ID_CACHE[team_name]
+# ── ESPN helpers ─────────────────────────────────────────
 
-    resp = requests.get(
-        f"{APIFOOTBALL_BASE}/teams",
-        headers=_headers(),
-        params={"name": team_name, "league": WC_LEAGUE_ID, "season": SEASON},
-        timeout=15
+def espn_get(url, params=None):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    try:
+        resp = requests.get(url, params=params, headers=headers, timeout=15)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        return None
+
+
+def get_upcoming_events(tour="pga"):
+    """Get upcoming PGA/Euro Tour events."""
+    data = espn_get(f"{ESPN_BASE}/{tour}/scoreboard")
+    if not data:
+        return []
+
+    events = []
+    for event in data.get("events", []):
+        status = event.get("status", {}).get("type", {}).get("name", "")
+        events.append({
+            "id":     event.get("id"),
+            "name":   event.get("name"),
+            "date":   event.get("date"),
+            "venue":  event.get("venue", {}).get("fullName", ""),
+            "city":   event.get("venue", {}).get("address", {}).get("city", ""),
+            "status": status,
+            "tour":   tour,
+        })
+    return events
+
+
+def get_event_field(event_id, tour="pga"):
+    """Get full field for an event with current scores."""
+    data = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
+    if not data:
+        return []
+
+    players = []
+    leaderboard = data.get("events", [{}])[0].get("competitions", [{}])[0].get("competitors", [])
+
+    scores = []
+    for comp in leaderboard:
+        score_to_par = comp.get("score", {}).get("value")
+        if score_to_par is not None:
+            try:
+                scores.append(float(score_to_par))
+            except:
+                pass
+
+    field_avg = sum(scores) / len(scores) if scores else 0
+
+    for comp in leaderboard:
+        athlete = comp.get("athlete", {})
+        players.append({
+            "id":           athlete.get("id"),
+            "name":         athlete.get("displayName"),
+            "country":      athlete.get("flag", {}).get("alt", ""),
+            "world_ranking": comp.get("status", {}).get("rank"),
+            "score_to_par": comp.get("score", {}).get("displayValue", "E"),
+            "position":     comp.get("status", {}).get("position", {}).get("displayName", ""),
+        })
+
+    return players, field_avg
+
+
+def get_player_recent_results(player_id, tour="pga", last_n=5):
+    """
+    Get player's last N tournament results from ESPN event log.
+    Returns list of {event_name, score_to_par, field_avg, position, tier_weight}
+    """
+    season = 2026
+    data = espn_get(
+        f"{ESPN_CORE}/{tour}/seasons/{season}/athletes/{player_id}/eventlog",
+        params={"lang": "en", "region": "us"}
     )
-    teams = resp.json().get("response", [])
-    if teams:
-        team_id = teams[0]["team"]["id"]
-        TEAM_ID_CACHE[team_name] = team_id
-        return team_id
 
-    # Fallback: search by name without league filter
-    resp2 = requests.get(
-        f"{APIFOOTBALL_BASE}/teams",
-        headers=_headers(),
-        params={"search": team_name},
-        timeout=15
-    )
-    teams2 = resp2.json().get("response", [])
-    # Filter to national teams only
-    national = [t for t in teams2 if t["team"].get("national") is True]
-    if national:
-        team_id = national[0]["team"]["id"]
-        TEAM_ID_CACHE[team_name] = team_id
-        return team_id
+    if not data:
+        return []
 
-    return None
+    results = []
+    events = data.get("events", {}).get("items", [])
+
+    for event_ref in events:
+        # Each item is a reference URL — fetch it
+        event_url = event_ref.get("$ref")
+        if not event_url:
+            continue
+
+        event_data = espn_get(event_url)
+        if not event_data:
+            continue
+
+        # Check event is completed
+        status = event_data.get("competitions", [{}])[0].get("status", {}).get("type", {}).get("completed", False)
+        if not status:
+            continue
+
+        event_name = event_data.get("name", "")
+        tier_weight = get_event_tier(event_name)
+
+        # Get player's score from the leaderboard
+        competitors = event_data.get("competitions", [{}])[0].get("competitors", [])
+        all_scores = []
+        player_score = None
+        player_position = None
+
+        for comp in competitors:
+            score_val = None
+            try:
+                score_val = float(comp.get("score", {}).get("value", 0))
+                all_scores.append(score_val)
+            except:
+                pass
+
+            if str(comp.get("athlete", {}).get("id")) == str(player_id):
+                player_score = score_val
+                player_position = comp.get("status", {}).get("position", {}).get("displayName", "")
+
+        if player_score is None or not all_scores:
+            continue
+
+        field_avg = sum(all_scores) / len(all_scores)
+        sg_vs_field = field_avg - player_score  # positive = better than field
+
+        results.append({
+            "event_name":   event_name,
+            "event_id":     event_data.get("id"),
+            "score_to_par": player_score,
+            "field_avg":    round(field_avg, 2),
+            "sg_vs_field":  round(sg_vs_field, 2),
+            "position":     player_position,
+            "tier_weight":  tier_weight,
+        })
+
+        if len(results) >= last_n:
+            break
+
+        time.sleep(0.3)
+
+    return results
 
 
-def get_team_xg(team_name, last_n=10):
-    """Fetch weighted average xG for a national team from recent fixtures."""
-    team_id = get_team_id(team_name)
-    if not team_id:
-        raise ValueError(f"Could not find team ID for '{team_name}'.")
+def calculate_player_rating(results):
+    """
+    Weighted average of SG vs field over last N events.
+    More recent = higher weight, higher tier = higher weight.
+    """
+    if not results:
+        return None
 
-    # Fetch recent completed internationals — use last_n * 3 to allow venue filtering
-    resp = requests.get(
-        f"{APIFOOTBALL_BASE}/fixtures",
-        headers=_headers(),
-        params={"team": team_id, "last": 20},
-        timeout=15
-    )
-    resp.raise_for_status()
-    fixtures = resp.json().get("response", [])
+    n = len(results)
+    recency_weights = list(range(1, n + 1))  # [1, 2, ..., n] oldest to newest
 
-    if not fixtures:
-        raise ValueError(f"No recent fixtures found for {team_name}.")
+    total_weight = 0
+    weighted_sum = 0
 
-    fixtures = fixtures[-last_n:] if len(fixtures) > last_n else fixtures
+    for i, result in enumerate(results):
+        recency_w = recency_weights[i]
+        tier_w    = result["tier_weight"]
+        combined  = recency_w * tier_w
+        weighted_sum += result["sg_vs_field"] * combined
+        total_weight += combined
 
-    xg_for_vals     = []
-    xg_against_vals = []
-    corner_for_vals     = []
-    corner_against_vals = []
-    yellow_for_vals     = []
-    red_for_vals        = []
-    shots_for_vals      = []
-    fouls_for_vals      = []
+    if total_weight == 0:
+        return None
 
-    for fixture in fixtures:
-        fixture_id = fixture.get("fixture", {}).get("id")
-        teams      = fixture.get("teams", {})
-        is_home    = teams.get("home", {}).get("id") == team_id
-
-        stats_resp = requests.get(
-            f"{APIFOOTBALL_BASE}/fixtures/statistics",
-            headers=_headers(),
-            params={"fixture": fixture_id},
-            timeout=15
-        )
-        all_stats = stats_resp.json().get("response", [])
-
-        team_xg = opp_xg = team_corners = opp_corners = None
-        team_yellow = team_red = team_shots = team_fouls = None
-
-        for team_stats in all_stats:
-            tid = team_stats.get("team", {}).get("id")
-            for stat in team_stats.get("statistics", []):
-                stype = stat.get("type")
-                val   = stat.get("value")
-                def fval(v):
-                    try: return float(v) if v and str(v) not in ("None", "") else None
-                    except: return None
-
-                if stype in ("Expected Goals", "expected_goals"):
-                    if tid == team_id: team_xg = fval(val)
-                    else:              opp_xg  = fval(val)
-                elif stype == "Corner Kicks":
-                    if tid == team_id: team_corners = fval(val)
-                    else:              opp_corners  = fval(val)
-                elif stype == "Yellow Cards":
-                    if tid == team_id: team_yellow = fval(val)
-                elif stype == "Red Cards":
-                    if tid == team_id: team_red = fval(val)
-                elif stype == "Total Shots":
-                    if tid == team_id: team_shots = fval(val)
-                elif stype == "Fouls":
-                    if tid == team_id: team_fouls = fval(val)
-
-        if team_xg is not None and opp_xg is not None:
-            xg_for_vals.append(team_xg)
-            xg_against_vals.append(opp_xg)
-        if team_corners is not None and opp_corners is not None:
-            corner_for_vals.append(team_corners)
-            corner_against_vals.append(opp_corners)
-        if team_yellow is not None: yellow_for_vals.append(team_yellow)
-        if team_red    is not None: red_for_vals.append(team_red)
-        if team_shots  is not None: shots_for_vals.append(team_shots)
-        if team_fouls  is not None: fouls_for_vals.append(team_fouls)
-
-        time.sleep(0.5)
-
-    # If fewer than 3 games have xG data, treat as unreliable and use goals fallback
-    if len(xg_for_vals) < 3:
-        xg_for_vals = []
-        xg_against_vals = []
-
-    if not xg_for_vals:
-        # Fallback: use goals scored/conceded as proxy for xG
-        goals_for_vals     = []
-        goals_against_vals = []
-        for fixture in fixtures:
-            teams  = fixture.get("teams", {})
-            goals  = fixture.get("goals", {})
-            is_home = teams.get("home", {}).get("id") == team_id
-            if is_home:
-                gf = goals.get("home")
-                ga = goals.get("away")
-            else:
-                gf = goals.get("away")
-                ga = goals.get("home")
-            if gf is not None and ga is not None:
-                goals_for_vals.append(float(gf))
-                goals_against_vals.append(float(ga))
-
-        if not goals_for_vals:
-            raise ValueError(f"No data found for {team_name}.")
-
-        def weighted_avg_goals(lst):
-            if not lst: return None
-            n = len(lst)
-            weights = list(range(1, n + 1))
-            total_weight = sum(weights)
-            return round(sum(v * w for v, w in zip(lst, weights)) / total_weight, 3)
-
-        def avg(lst):
-            return round(sum(lst) / len(lst), 2) if lst else None
-
-        return {
-            "team":                 team_name,
-            "xg_for":               weighted_avg_goals(goals_for_vals),
-            "xg_against":           weighted_avg_goals(goals_against_vals),
-            "matches_used":         len(goals_for_vals),
-            "fallback":             True,
-            "corners_for":          avg(corner_for_vals),
-            "corners_against":      avg(corner_against_vals),
-            "yellow_cards_for":     avg(yellow_for_vals),
-            "red_cards_for":        avg(red_for_vals),
-            "shots_for":            avg(shots_for_vals),
-            "fouls_for":            avg(fouls_for_vals),
-        }
-
-    def weighted_avg(lst):
-        """More recent games carry higher weight."""
-        if not lst: return None
-        n = len(lst)
-        weights = list(range(1, n + 1))
-        total_weight = sum(weights)
-        return round(sum(v * w for v, w in zip(lst, weights)) / total_weight, 3)
-
-    def avg(lst):
-        return round(sum(lst) / len(lst), 2) if lst else None
-
-    return {
-        "team":                 team_name,
-        "xg_for":               weighted_avg(xg_for_vals),
-        "xg_against":           weighted_avg(xg_against_vals),
-        "matches_used":         len(xg_for_vals),
-        "fallback":             False,
-        "corners_for":          avg(corner_for_vals),
-        "corners_against":      avg(corner_against_vals),
-        "yellow_cards_for":     avg(yellow_for_vals),
-        "red_cards_for":        avg(red_for_vals),
-        "shots_for":            avg(shots_for_vals),
-        "fouls_for":            avg(fouls_for_vals),
-    }
+    return round(weighted_sum / total_weight, 3)
 
 
 # ── Odds API ─────────────────────────────────────────────
 
-def get_match_odds(home_team, away_team):
+def get_golf_odds(tournament_name=""):
+    """Fetch golf outright odds from The Odds API."""
     if not ODDS_API_KEY:
-        return {"error": "No API key set. Add ODDS_API_KEY to Railway Variables."}
+        return {"error": "No ODDS_API_KEY set"}
 
-    # Try FIFA World Cup sport key
-    for sport_key in ["soccer_fifa_world_cup", "soccer_world_cup"]:
+    sport_keys = ["golf_pga_championship", "golf_masters_tournament_winner",
+                  "golf_us_open_winner", "golf_the_open_championship_winner",
+                  "golf_pga_tour_winner"]
+
+    for sport_key in sport_keys:
         try:
-            url = f"{ODDS_API_BASE}/sports/{sport_key}/odds"
-            params = {
-                "apiKey":     ODDS_API_KEY,
-                "regions":    "uk",
-                "markets":    "h2h",
-                "oddsFormat": "decimal",
-            }
-            resp = requests.get(url, params=params, timeout=15)
+            resp = requests.get(
+                f"{ODDS_API_BASE}/sports/{sport_key}/odds",
+                params={
+                    "apiKey":     ODDS_API_KEY,
+                    "regions":    "uk",
+                    "markets":    "outrights",
+                    "oddsFormat": "decimal",
+                },
+                timeout=15
+            )
             if resp.status_code == 404:
                 continue
             resp.raise_for_status()
             events = resp.json()
-
-            home_search = home_team.lower()
-            away_search = away_team.lower()
-
-            for event in events:
-                ht = event.get("home_team", "").lower()
-                at = event.get("away_team", "").lower()
-
-                if (home_search in ht or ht in home_search) and \
-                   (away_search in at or at in away_search):
-
-                    bookmakers = event.get("bookmakers", [])
-                    if not bookmakers:
-                        continue
-
-                    preferred = ["betfair_ex_eu", "bet365", "williamhill", "paddypower"]
-                    bm = next(
-                        (b for b in bookmakers if b["key"] in preferred),
-                        bookmakers[0]
-                    )
-
-                    markets  = {m["key"]: m for m in bm.get("markets", [])}
-                    h2h      = markets.get("h2h", {})
-                    outcomes = {o["name"].lower(): o["price"] for o in h2h.get("outcomes", [])}
-
-                    home_odds = outcomes.get(ht) or outcomes.get(home_search)
-                    away_odds = outcomes.get(at) or outcomes.get(away_search)
-                    draw_odds = outcomes.get("draw")
-
-                    return {
-                        "home_team":  event["home_team"],
-                        "away_team":  event["away_team"],
-                        "home_odds":  home_odds,
-                        "draw_odds":  draw_odds,
-                        "away_odds":  away_odds,
-                        "bookmaker":  bm["title"],
-                        "commence":   event.get("commence_time", ""),
-                    }
+            if events:
+                # Find matching tournament
+                for event in events:
+                    if not tournament_name or tournament_name.lower() in event.get("sport_title", "").lower():
+                        bookmakers = event.get("bookmakers", [])
+                        if not bookmakers:
+                            continue
+                        preferred = ["paddypower", "bet365", "williamhill", "betfair_ex_eu"]
+                        bm = next((b for b in bookmakers if b["key"] in preferred), bookmakers[0])
+                        markets = {m["key"]: m for m in bm.get("markets", [])}
+                        outrights = markets.get("outrights", {})
+                        outcomes = outrights.get("outcomes", [])
+                        return {
+                            "bookmaker": bm["title"],
+                            "sport_key": sport_key,
+                            "players": [
+                                {"name": o["name"], "odds": o["price"]}
+                                for o in outcomes
+                            ]
+                        }
         except Exception:
             continue
 
-    return {"error": f"No fixture found for {home_team} vs {away_team}. May not be scheduled yet."}
+    return {"error": "No golf odds found — tournament may not be available yet"}
 
 
 # ── Routes ───────────────────────────────────────────────
@@ -295,81 +277,55 @@ def index():
     return "OK", 200
 
 
-@app.route("/api/fixtures")
-def api_fixtures():
-    """Return upcoming World Cup fixtures."""
-    if not RAPIDAPI_KEY:
-        return jsonify({"error": "RAPIDAPI_KEY not set."})
+@app.route("/api/events")
+def api_events():
+    """Return upcoming PGA and DP World Tour events."""
     try:
-        resp = requests.get(
-            f"{APIFOOTBALL_BASE}/fixtures",
-            headers=_headers(),
-            params={"league": WC_LEAGUE_ID, "season": SEASON, "next": 20},
-            timeout=15
-        )
-        resp.raise_for_status()
-        payload = resp.json()
-        api_errors = payload.get("errors")
-        fixtures = payload.get("response", [])
-
-        # API-Football often returns HTTP 200 with an empty response and the
-        # real problem in "errors" (rate limit, quota, bad param). Surface it.
-        if api_errors:
-            return jsonify({"error": api_errors, "results": payload.get("results")})
-
-        result = []
-        for f in fixtures:
-            home = f.get("teams", {}).get("home", {})
-            away = f.get("teams", {}).get("away", {})
-            result.append({
-                "fixture_id": f.get("fixture", {}).get("id"),
-                "home":       home.get("name"),
-                "away":       away.get("name"),
-                "date":       f.get("fixture", {}).get("date", ""),
-                "venue":      f.get("fixture", {}).get("venue", {}).get("name", ""),
-                "city":       f.get("fixture", {}).get("venue", {}).get("city", ""),
-            })
-
-        return jsonify({"fixtures": result})
+        pga_events  = get_upcoming_events("pga")
+        euro_events = get_upcoming_events("euro")
+        all_events  = pga_events + euro_events
+        # Sort by date
+        all_events.sort(key=lambda x: x.get("date", ""))
+        return jsonify({"events": all_events[:20]})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/debug-key")
-def api_debug_key():
-    """Temporary diagnostic — confirms whether RAPIDAPI_KEY is actually
-    reaching this running process intact. Remove once fixtures are fixed."""
-    key = RAPIDAPI_KEY
-    return jsonify({
-        "length": len(key),
-        "first4": key[:4] if key else None,
-        "last4": key[-4:] if key else None,
-        "has_whitespace": key != key.strip(),
-        "repr": repr(key)[:50],
-    })
+@app.route("/api/field")
+def api_field():
+    """Return field for a given event."""
+    event_id = request.args.get("event_id", "")
+    tour     = request.args.get("tour", "pga")
+    if not event_id:
+        return jsonify({"error": "Provide event_id"}), 400
+    try:
+        players, field_avg = get_event_field(event_id, tour)
+        return jsonify({"players": players, "field_avg": field_avg})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/xg")
-def api_xg():
-    home   = request.args.get("home", "")
-    away   = request.args.get("away", "")
-    last_n = int(request.args.get("last_n", 10))
+@app.route("/api/player")
+def api_player():
+    """Return player rating based on last N results."""
+    player_id   = request.args.get("player_id", "")
+    player_name = request.args.get("name", "")
+    tour        = request.args.get("tour", "pga")
+    last_n      = int(request.args.get("last_n", 5))
 
-    if not home or not away:
-        return jsonify({"error": "Provide home and away team names"}), 400
+    if not player_id:
+        return jsonify({"error": "Provide player_id"}), 400
 
     try:
-        home_data = get_team_xg(home, last_n=last_n)
-        away_data = get_team_xg(away, last_n=last_n)
-
-        home_lambda = round((home_data["xg_for"] + away_data["xg_against"]) / 2, 3)
-        away_lambda = round((away_data["xg_for"]  + home_data["xg_against"]) / 2, 3)
+        results = get_player_recent_results(player_id, tour, last_n)
+        rating  = calculate_player_rating(results)
 
         return jsonify({
-            "home":        home_data,
-            "away":        away_data,
-            "home_lambda": home_lambda,
-            "away_lambda": away_lambda,
+            "player_id":   player_id,
+            "player_name": player_name,
+            "rating":      rating,
+            "results":     results,
+            "events_used": len(results),
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -377,51 +333,86 @@ def api_xg():
 
 @app.route("/api/odds")
 def api_odds():
-    home = request.args.get("home", "")
-    away = request.args.get("away", "")
-
-    if not home or not away:
-        return jsonify({"error": "Provide home and away team names"}), 400
-
+    """Return golf outright odds."""
+    tournament = request.args.get("tournament", "")
     try:
-        return jsonify(get_match_odds(home, away))
+        return jsonify(get_golf_odds(tournament))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/match")
-def api_match():
-    home   = request.args.get("home", "")
-    away   = request.args.get("away", "")
-    last_n = int(request.args.get("last_n", 10))
+@app.route("/api/analyse")
+def api_analyse():
+    """
+    Analyse full field for an event.
+    Returns all players with their rating and bookmaker odds for value comparison.
+    """
+    event_id = request.args.get("event_id", "")
+    tour     = request.args.get("tour", "pga")
+    last_n   = int(request.args.get("last_n", 5))
 
-    if not home or not away:
-        return jsonify({"error": "Provide home and away team names"}), 400
-
-    result = {}
-
-    try:
-        home_data   = get_team_xg(home, last_n=last_n)
-        away_data   = get_team_xg(away, last_n=last_n)
-        home_lambda = round((home_data["xg_for"] + away_data["xg_against"]) / 2, 3)
-        away_lambda = round((away_data["xg_for"]  + home_data["xg_against"]) / 2, 3)
-        result["xg"] = {
-            "home":        home_data,
-            "away":        away_data,
-            "home_lambda": home_lambda,
-            "away_lambda": away_lambda,
-        }
-    except Exception as e:
-        result["xg"] = {"error": str(e)}
+    if not event_id:
+        return jsonify({"error": "Provide event_id"}), 400
 
     try:
-        result["odds"] = get_match_odds(home, away)
-    except Exception as e:
-        result["odds"] = {"error": str(e)}
+        players, field_avg = get_event_field(event_id, tour)
 
-    return jsonify(result)
+        # Get event name for odds lookup
+        event_data = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
+        event_name = event_data.get("events", [{}])[0].get("name", "") if event_data else ""
+
+        # Get odds
+        odds_data = get_golf_odds(event_name)
+        odds_map  = {}
+        if "players" in odds_data:
+            for p in odds_data["players"]:
+                odds_map[p["name"].lower()] = p["odds"]
+
+        # Calculate ratings for each player
+        results = []
+        for player in players[:50]:  # Limit to top 50 to avoid rate limits
+            pid  = player.get("id")
+            name = player.get("name", "")
+            if not pid:
+                continue
+
+            recent = get_player_recent_results(pid, tour, last_n)
+            rating = calculate_player_rating(recent)
+
+            # Match odds
+            player_odds = None
+            for odds_name, odds_val in odds_map.items():
+                if any(part in odds_name for part in name.lower().split()):
+                    player_odds = odds_val
+                    break
+
+            results.append({
+                "player_id":    pid,
+                "name":         name,
+                "country":      player.get("country", ""),
+                "rating":       rating,
+                "events_used":  len(recent),
+                "recent":       recent,
+                "odds":         player_odds,
+                "implied_prob": round(1 / player_odds * 100, 2) if player_odds else None,
+            })
+
+            time.sleep(0.5)
+
+        # Sort by rating descending
+        results.sort(key=lambda x: x["rating"] or -99, reverse=True)
+
+        return jsonify({
+            "event_name": event_name,
+            "tour":       tour,
+            "players":    results,
+            "odds_source": odds_data.get("bookmaker", ""),
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
-    print("\n  WC 2026 Pricing Engine starting...\n")
+    print("\n  Golf Pricing Engine starting...\n")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
