@@ -137,7 +137,7 @@ def get_event_field(event_id, tour="pga"):
         athlete = comp.get("athlete", {})
         status = _as_dict(comp.get("status"))
         players.append({
-            "id":           athlete.get("id"),
+            "id":           comp.get("id") or athlete.get("id"),
             "name":         athlete.get("displayName"),
             "country":      athlete.get("flag", {}).get("alt", ""),
             "world_ranking": status.get("rank"),
@@ -201,7 +201,8 @@ def get_player_recent_results(player_id, tour="pga", last_n=5):
             except:
                 pass
 
-            if str(comp.get("athlete", {}).get("id")) == str(player_id):
+            comp_athlete_id = comp.get("id") or comp.get("athlete", {}).get("id")
+            if str(comp_athlete_id) == str(player_id):
                 player_score = score_val
                 comp_status = _as_dict(comp.get("status"))
                 player_position = _as_dict(comp_status.get("position")).get("displayName", "")
@@ -532,7 +533,6 @@ def api_analyse():
                 "candidates":        len(candidates),
                 "analysed_ok":       len(analysed),
                 "final_results":     len(results),
-                "sample_players":    players[:3],
             },
         })
 
