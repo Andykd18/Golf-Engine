@@ -3,28 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WC 2026 Pricing Engine</title>
+<title>Golf Pricing Engine</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #1c1c1a;
-    --surface: #242422;
-    --surface2: #2c2c2a;
-    --border: rgba(255,255,255,0.09);
-    --border-mid: rgba(255,255,255,0.16);
-    --text: #f0ede8;
-    --text-2: #a8a5a0;
-    --text-3: #6a6865;
-    --blue: #185FA5;
-    --blue-light: #0c2d4a;
-    --blue-text: #85B7EB;
-    --red: #A32D2D;
-    --red-light: #3a1414;
-    --red-text: #F09595;
-    --green: #3B6D11;
-    --green-light: #1a3008;
-    --green-text: #97C459;
+    --bg: #141a12;
+    --surface: #1c251a;
+    --surface2: #232e20;
+    --border: rgba(255,255,255,0.07);
+    --border-mid: rgba(255,255,255,0.14);
+    --text: #eef0eb;
+    --text-2: #9da89a;
+    --text-3: #5a6358;
+    --green: #4a8c3f;
+    --green-light: #1e3a1a;
+    --green-text: #7ec97a;
+    --red: #8c3f3f;
+    --red-light: #3a1a1a;
+    --red-text: #c97a7a;
+    --gold: #b8942a;
+    --gold-light: #3a2e0a;
+    --gold-text: #d4b84a;
     --radius: 10px;
     --radius-sm: 6px;
   }
@@ -37,7 +37,7 @@
     padding: 2rem 1rem;
   }
 
-  .page { max-width: 760px; margin: 0 auto; }
+  .page { max-width: 820px; margin: 0 auto; }
 
   header {
     display: flex;
@@ -51,1127 +51,500 @@
   header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
   header span { font-size: 12px; color: var(--text-3); }
 
-  .pitch {
-    display: grid;
-    grid-template-columns: 1fr 56px 1fr;
-    gap: 12px;
-    align-items: start;
-    margin-bottom: 1rem;
-  }
-
-  .team-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-  }
-
-  .team-card.home { border-top: 2px solid var(--blue); border-radius: 0 0 var(--radius) var(--radius); }
-  .team-card.away { border-top: 2px solid var(--red);  border-radius: 0 0 var(--radius) var(--radius); }
-
-  .team-pill {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .07em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-  }
-
-  .home .team-pill { background: var(--blue-light); color: var(--blue-text); }
-  .away .team-pill { background: var(--red-light);  color: var(--red-text); }
-
-  select {
-    width: 100%;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: inherit;
-    border: none;
-    background: transparent;
-    color: var(--text);
-    outline: none;
-    margin-bottom: 16px;
-    padding: 0;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a6865' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 2px center;
-    padding-right: 20px;
-  }
-
-  select option { background: #2c2c2a; color: #f0ede8; font-weight: 400; }
-
-  .field-label { font-size: 11px; color: var(--text-3); margin-bottom: 6px; }
-  .xg-input-wrap { margin-bottom: 14px; }
-
-  .xg-input-wrap input[type=number] {
-    width: 100%;
-    font-size: 22px;
-    font-weight: 500;
-    font-family: inherit;
-    padding: 6px 0;
-    border: none;
-    border-bottom: 0.5px solid var(--border-mid);
-    border-radius: 0;
-    background: transparent;
-    color: var(--text);
-    outline: none;
-  }
-
-  .xg-input-wrap input[type=number]:focus { border-bottom-color: var(--blue-text); }
-  .xg-unit { font-size: 11px; color: var(--text-3); margin-top: 3px; }
-
-  .odds-label { font-size: 11px; color: var(--text-3); margin-bottom: 5px; margin-top: 4px; }
-
-  .odds-input {
-    width: 100%;
-    font-size: 14px;
-    font-weight: 400;
-    font-family: inherit;
-    padding: 7px 10px;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface2);
-    color: var(--text);
-    outline: none;
-  }
-
-  .odds-input:focus { border-color: var(--blue-text); }
-  .odds-input.invalid { border-color: var(--red-text); }
-  .odds-hint { font-size: 10px; color: var(--text-3); margin-top: 3px; }
-
-  .vs-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-top: 1.5rem;
-    gap: 12px;
-  }
-
-  .vs-txt { font-size: 12px; font-weight: 500; color: var(--text-3); }
-
-  .swap-btn {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: 0.5px solid var(--border-mid);
-    background: var(--surface2);
-    color: var(--text-2);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-    transition: background .15s, color .15s;
-  }
-
-  .swap-btn:hover { background: var(--surface); color: var(--text); }
-  .swap-btn:active { transform: scale(0.93); }
-
-  .draw-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .draw-lbl { font-size: 10px; color: var(--text-3); text-align: center; }
-
-  .draw-input {
-    width: 60px;
-    font-size: 13px;
-    font-family: inherit;
-    padding: 6px 8px;
-    border: 0.5px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface2);
-    color: var(--text);
-    text-align: center;
-    outline: none;
-  }
-
-  .draw-input:focus { border-color: var(--blue-text); }
-  .draw-input.invalid { border-color: var(--red-text); }
-
-  .settings {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 14px;
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .settings label { font-size: 12px; color: var(--text-2); white-space: nowrap; }
-  .settings .sval { font-size: 13px; font-weight: 500; min-width: 30px; }
-
-  input[type=range] {
-    -webkit-appearance: none;
-    flex: 1; min-width: 80px;
-    height: 4px; border-radius: 2px;
-    background: var(--border-mid); outline: none;
-  }
-
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--text); cursor: pointer;
-  }
-
-  .btn-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-
-  .calc-btn, .fetch-btn {
-    width: 100%; padding: 11px;
-    font-size: 14px; font-weight: 500; font-family: inherit;
-    cursor: pointer; border: none; border-radius: var(--radius-sm);
-    transition: opacity .15s;
-  }
-
-  .calc-btn { background: var(--text); color: var(--bg); }
-
-  .fetch-btn {
-    background: var(--blue); color: #fff;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-  }
-
-  .fetch-btn:hover, .calc-btn:hover { opacity: .85; }
-  .fetch-btn:active, .calc-btn:active { opacity: .7; }
-  .fetch-btn.loading { opacity: .6; cursor: wait; }
-
-  .fetch-status {
-    font-size: 11px; color: var(--text-3);
-    margin-bottom: 0.5rem; min-height: 16px; text-align: center;
-  }
-
-  .fetch-status.ok  { color: var(--green-text); }
-  .fetch-status.err { color: var(--red-text); }
-
   .section-title {
     font-size: 11px; font-weight: 500;
     letter-spacing: .06em; text-transform: uppercase;
     color: var(--text-3); margin-bottom: 10px;
   }
 
-  .outcomes {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px; margin-bottom: 1.5rem;
-  }
+  /* Event picker */
+  .event-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
 
-  .oc {
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 1rem; position: relative; overflow: hidden;
-  }
-
-  .oc-bar { position: absolute; bottom: 0; left: 0; height: 3px; transition: width .4s ease; }
-  .oc-lbl { font-size: 11px; color: var(--text-2); margin-bottom: 4px; }
-  .oc-pct { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
-  .oc-imp { font-size: 11px; color: var(--text-3); margin-bottom: 6px; }
-
-  .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
-  .bv { background: var(--green-light); color: var(--green-text); }
-  .ba { background: var(--red-light);   color: var(--red-text); }
-  .bf { background: var(--surface); color: var(--text-3); border: 0.5px solid var(--border); }
-
-  .scorelines { margin-bottom: 1.5rem; }
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-  .bar-score { font-size: 12px; font-weight: 500; color: var(--text-2); width: 30px; text-align: right; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 500; color: #fff; transition: width .4s ease; }
-
-  .matrix-grid { display: grid; gap: 3px; }
-  .mcell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 3px; font-size: 9px; font-weight: 500; }
-  .acell { display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-3); font-weight: 500; }
-
-  .matrix-legend { display: flex; gap: 16px; margin-top: 8px; padding-bottom: 2rem; }
-  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
-  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button { opacity: 1; }
-
-  /* History */
-  .history-wrap { margin-top: 2rem; border-top: 0.5px solid var(--border); padding-top: 1.5rem; }
-
-  .history-header {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 12px;
-  }
-
-  .clear-btn {
-    font-size: 11px; color: var(--text-3);
-    background: none; border: none; cursor: pointer;
-    font-family: inherit; padding: 2px 6px; border-radius: 4px;
-  }
-
-  .clear-btn:hover { color: var(--red-text); }
-  .history-empty { font-size: 12px; color: var(--text-3); padding: 1rem 0; }
-
-  .history-item {
-    background: var(--surface); border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm); padding: 12px 14px;
-    margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
-  }
-
-  .history-item:hover { border-color: var(--border-mid); }
-
-  .history-match {
-    font-size: 13px; font-weight: 500; margin-bottom: 6px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-
-  .history-time { font-size: 10px; color: var(--text-3); font-weight: 400; }
-  .history-stats { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  .hstat { font-size: 11px; color: var(--text-2); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
-  .hstat.val  { background: var(--green-light); color: var(--green-text); }
-  .hstat.over { background: var(--red-light);   color: var(--red-text); }
-
-  /* Acca builder */
-  .acca-wrap { margin-top: 1.5rem; background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; display: none; }
-  .acca-wrap.visible { display: block; }
-  .acca-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .acca-header h3 { font-size: 13px; font-weight: 500; }
-  .acca-legs { margin-bottom: 12px; }
-  .acca-leg { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
-  .acca-leg:last-child { border-bottom: none; }
-  .acca-leg-match { flex: 1; color: var(--text-2); }
-  .acca-leg-sel   { font-weight: 500; color: var(--text); min-width: 80px; }
-  .acca-leg-odds  { color: var(--blue-text); min-width: 40px; text-align: right; }
-  .acca-leg-remove { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 14px; padding: 0 4px; line-height: 1; }
-  .acca-leg-remove:hover { color: var(--red-text); }
-  .acca-result { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 0.5px solid var(--border); }
-  .acca-total-odds { font-size: 20px; font-weight: 500; color: var(--blue-text); }
-  .acca-meta { font-size: 11px; color: var(--text-3); }
-  .acca-add-btn { font-size: 11px; background: var(--surface); border: 0.5px solid var(--border-mid); border-radius: 4px; color: var(--text-2); cursor: pointer; padding: 3px 8px; font-family: inherit; }
-  .acca-add-btn:hover { color: var(--text); }
-
-  /* Export button */
-  .export-btn {
-    width: 100%; padding: 9px; font-size: 13px; font-weight: 500; font-family: inherit;
-    cursor: pointer; border: 0.5px solid var(--border-mid); border-radius: var(--radius-sm);
-    background: var(--surface2); color: var(--text-2); margin-top: 10px;
-    transition: background .15s, color .15s;
-  }
-  .export-btn:hover { background: var(--surface); color: var(--text); }
-
-  /* Fixture picker */
-  .fixture-picker { margin-bottom: 1rem; }
-  .fixture-picker-label { font-size: 11px; color: var(--text-3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
-  .fixture-list { display: flex; flex-direction: column; gap: 6px; }
-  .fixture-btn {
+  .event-btn {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 14px; background: var(--surface); border: 0.5px solid var(--border);
     border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
     color: var(--text); transition: border-color .15s, background .15s; text-align: left;
   }
-  .fixture-btn:hover { border-color: var(--border-mid); background: var(--surface2); }
-  .fixture-btn.active { border-color: var(--blue-text); background: var(--blue-light); }
-  .fixture-match { font-size: 13px; font-weight: 500; }
-  .fixture-date  { font-size: 11px; color: var(--text-3); }
-  .fixture-loading { font-size: 12px; color: var(--text-3); padding: 8px 0; }
+
+  .event-btn:hover { border-color: var(--border-mid); background: var(--surface2); }
+  .event-btn.active { border-color: var(--green-text); background: var(--green-light); }
+  .event-name { font-size: 13px; font-weight: 500; }
+  .event-meta { font-size: 11px; color: var(--text-3); text-align: right; }
+  .event-tour { font-size: 10px; padding: 1px 6px; border-radius: 3px; background: var(--surface2); color: var(--text-3); margin-left: 8px; }
+
+  /* Controls */
+  .controls {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; background: var(--surface2);
+    border-radius: var(--radius-sm); margin-bottom: 1rem; flex-wrap: wrap;
+  }
+
+  .controls label { font-size: 12px; color: var(--text-2); }
+
+  select.ctrl-sel {
+    font-size: 12px; font-family: inherit;
+    padding: 4px 8px; border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm); background: var(--surface);
+    color: var(--text); outline: none; cursor: pointer;
+  }
+
+  .fetch-btn {
+    padding: 8px 16px; font-size: 13px; font-weight: 500; font-family: inherit;
+    cursor: pointer; border: none; border-radius: var(--radius-sm);
+    background: var(--green); color: #fff; transition: opacity .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .fetch-btn:hover { opacity: .85; }
+  .fetch-btn.loading { opacity: .6; cursor: wait; }
+
+  .status {
+    font-size: 11px; color: var(--text-3);
+    margin-bottom: 1rem; min-height: 16px; text-align: center;
+  }
+
+  .status.ok  { color: var(--green-text); }
+  .status.err { color: var(--red-text); }
+
+  /* Player table */
+  .table-wrap { overflow-x: auto; margin-bottom: 2rem; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead th {
+    text-align: left; padding: 8px 10px;
+    font-size: 10px; font-weight: 500; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--text-3);
+    border-bottom: 0.5px solid var(--border-mid);
+  }
+
+  thead th.right { text-align: right; }
+
+  tbody tr {
+    border-bottom: 0.5px solid var(--border);
+    transition: background .1s;
+    cursor: pointer;
+  }
+
+  tbody tr:hover { background: var(--surface); }
+
+  td {
+    padding: 9px 10px; color: var(--text-2);
+  }
+
+  td.right { text-align: right; }
+  td.name  { color: var(--text); font-weight: 500; font-size: 13px; }
+  td.pos   { color: var(--text-3); font-size: 11px; width: 32px; }
+
+  .rating-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .bar-track {
+    flex: 1; height: 6px; background: var(--surface2);
+    border-radius: 3px; overflow: hidden; min-width: 60px;
+  }
+
+  .bar-fill {
+    height: 100%; border-radius: 3px;
+    background: var(--green); transition: width .3s ease;
+  }
+
+  .bar-fill.neg { background: var(--red); }
+
+  .rating-val {
+    font-size: 12px; font-weight: 500; min-width: 38px; text-align: right;
+  }
+
+  .rating-val.pos { color: var(--green-text); }
+  .rating-val.neg { color: var(--red-text); }
+  .rating-val.nil { color: var(--text-3); }
+
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 4px;
+  }
+
+  .bv   { background: var(--green-light); color: var(--green-text); }
+  .ba   { background: var(--red-light);   color: var(--red-text); }
+  .bf   { background: var(--surface2); color: var(--text-3); border: 0.5px solid var(--border); }
+  .bgold { background: var(--gold-light); color: var(--gold-text); }
+
+  /* Player detail panel */
+  .detail-panel {
+    display: none; background: var(--surface);
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius); padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-panel.open { display: block; }
+
+  .detail-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .detail-name { font-size: 16px; font-weight: 500; }
+  .detail-close { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 18px; }
+
+  .detail-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-bottom: 1rem;
+  }
+
+  .dstat {
+    background: var(--surface2); border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .dstat-lbl { font-size: 10px; color: var(--text-3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+  .dstat-val { font-size: 18px; font-weight: 500; }
+
+  .recent-results { margin-top: 1rem; }
+  .result-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 12px;
+  }
+
+  .result-row:last-child { border-bottom: none; }
+  .result-event { color: var(--text-2); flex: 1; }
+  .result-pos   { color: var(--text-3); min-width: 40px; text-align: right; }
+  .result-sg    { min-width: 55px; text-align: right; font-weight: 500; }
+  .result-sg.pos { color: var(--green-text); }
+  .result-sg.neg { color: var(--red-text); }
+
+  .loading-row td { text-align: center; color: var(--text-3); padding: 2rem; }
+
+  /* Filters */
+  .filter-row {
+    display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-size: 11px; padding: 4px 10px;
+    border: 0.5px solid var(--border-mid); border-radius: 20px;
+    background: var(--surface2); color: var(--text-2);
+    cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+
+  .filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .empty { font-size: 12px; color: var(--text-3); padding: 2rem 0; text-align: center; }
 </style>
 </head>
 <body>
 <div class="page">
 
   <header>
-    <h1>WC 2026 Pricing Engine</h1>
-    <span id="match-title">World Cup 2026</span>
+    <h1>Golf Pricing Engine</h1>
+    <span id="event-title">Select a tournament</span>
   </header>
 
-  <div class="fixture-picker">
-    <div class="fixture-picker-label">Upcoming fixtures</div>
-    <div class="fixture-list" id="fixture-list">
-      <div class="fixture-loading">Loading fixtures...</div>
-    </div>
+  <div class="section-title" style="margin-bottom:8px">Upcoming tournaments</div>
+  <div class="event-list" id="event-list">
+    <div class="empty">Loading events...</div>
   </div>
 
-  <div class="pitch">
-    <div class="team-card home">
-      <div class="team-pill">Home</div>
-      <select id="hteam" onchange="updateTitle(); run();"></select>
-      <div class="field-label">xG per match</div>
-      <div class="xg-input-wrap">
-        <input type="number" id="hxg" value="1.70" step="0.01" min="0.10" max="5.00">
-        <div class="xg-unit">xG / match</div>
+  <div class="controls">
+    <label>Tour</label>
+    <select class="ctrl-sel" id="tour-sel">
+      <option value="both">PGA + DP World</option>
+      <option value="pga">PGA Tour</option>
+      <option value="euro">DP World Tour</option>
+    </select>
+    <label>Form</label>
+    <select class="ctrl-sel" id="form-sel">
+      <option value="5">Last 5 events</option>
+      <option value="3">Last 3 events</option>
+      <option value="8">Last 8 events</option>
+    </select>
+    <label>Show</label>
+    <select class="ctrl-sel" id="show-sel">
+      <option value="50">Top 50</option>
+      <option value="20">Top 20</option>
+      <option value="all">Full field</option>
+    </select>
+    <button class="fetch-btn" id="fetch-btn" onclick="fetchField()">&#x26F3; Analyse field</button>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div id="detail-panel" class="detail-panel">
+    <div class="detail-header">
+      <div class="detail-name" id="detail-name"></div>
+      <button class="detail-close" onclick="closeDetail()">&#x00D7;</button>
+    </div>
+    <div class="detail-grid">
+      <div class="dstat">
+        <div class="dstat-lbl">Rating</div>
+        <div class="dstat-val" id="detail-rating">—</div>
       </div>
-      <div class="field-label" style="margin-top:4px">xG against per match</div>
-      <div class="xg-input-wrap">
-        <input type="number" id="hxga" value="1.20" step="0.01" min="0.10" max="5.00">
-        <div class="xg-unit">xGA / match</div>
+      <div class="dstat">
+        <div class="dstat-lbl">Win odds</div>
+        <div class="dstat-val" id="detail-odds">—</div>
       </div>
-      <div class="odds-label">Win odds</div>
-      <input class="odds-input" type="text" id="hodds" value="14/5" placeholder="e.g. 4/5 or 1.80">
-      <div class="odds-hint" id="hodds-hint">= 3.80</div>
-    </div>
-
-    <div class="vs-col">
-      <span class="vs-txt">vs</span>
-      <button class="swap-btn" onclick="swap()" title="Swap home / away">⇄</button>
-      <div class="draw-wrap">
-        <div class="draw-lbl">Draw</div>
-        <input class="draw-input" type="text" id="dodds" value="12/5" placeholder="e.g. 3.40">
-        <div class="odds-hint" id="dodds-hint" style="text-align:center">= 3.40</div>
-      </div>
-    </div>
-
-    <div class="team-card away">
-      <div class="team-pill">Away</div>
-      <select id="ateam" onchange="updateTitle(); run();"></select>
-      <div class="field-label">xG per match</div>
-      <div class="xg-input-wrap">
-        <input type="number" id="axg" value="1.45" step="0.01" min="0.10" max="5.00">
-        <div class="xg-unit">xG / match</div>
-      </div>
-      <div class="field-label" style="margin-top:4px">xG against per match</div>
-      <div class="xg-input-wrap">
-        <input type="number" id="axga" value="1.50" step="0.01" min="0.10" max="5.00">
-        <div class="xg-unit">xGA / match</div>
-      </div>
-      <div class="odds-label">Win odds</div>
-      <input class="odds-input" type="text" id="aodds" value="4/5" placeholder="e.g. 4/5 or 1.80">
-      <div class="odds-hint" id="aodds-hint">= 1.80</div>
-    </div>
-  </div>
-
-  <div class="settings">
-    <label>Min edge</label>
-    <input type="range" min="1" max="20" step="1" value="5" id="edge-sl">
-    <span class="sval" id="edge-v">5%</span>
-  </div>
-
-  <div class="btn-row">
-    <button class="fetch-btn" id="fetch-btn" onclick="fetchData()">↓ Fetch xG &amp; odds</button>
-    <button class="calc-btn" onclick="calculate()">Calculate</button>
-  </div>
-  <div class="fetch-status" id="fetch-status"></div>
-  <div id="data-warnings" style="font-size:11px;color:var(--red-text);margin-bottom:0.5rem;min-height:0;text-align:center;"></div>
-  <div style="font-size:10px;color:var(--text-3);margin-bottom:1rem;text-align:center;padding:0 1rem;line-height:1.6;">
-    xG is based on last 20 internationals across all competitions. Teams using the goals proxy (⚠) may show inflated attacking stats from weaker opposition — treat those probabilities with caution. Model accuracy improves as WC group stage results replace qualifier data.
-  </div>
-
-  <div class="section-title">Outcome probabilities</div>
-  <div class="outcomes">
-    <div class="oc">
-      <div class="oc-bar" id="hbar" style="background:var(--blue);width:0%"></div>
-      <div class="oc-lbl" id="hlbl">Home win</div>
-      <div class="oc-pct" id="hpct">—</div>
-      <div class="oc-imp" id="himp">—</div>
-      <span class="badge bf" id="hbadge">—</span>
-    </div>
-    <div class="oc">
-      <div class="oc-bar" id="dbar" style="background:var(--green);width:0%"></div>
-      <div class="oc-lbl">Draw</div>
-      <div class="oc-pct" id="dpct">—</div>
-      <div class="oc-imp" id="dimp">—</div>
-      <span class="badge bf" id="dbadge">—</span>
-    </div>
-    <div class="oc">
-      <div class="oc-bar" id="abar" style="background:var(--red);width:0%"></div>
-      <div class="oc-lbl" id="albl">Away win</div>
-      <div class="oc-pct" id="apct">—</div>
-      <div class="oc-imp" id="aimp">—</div>
-      <span class="badge bf" id="abadge">—</span>
-    </div>
-  </div>
-
-  <div class="section-title" style="margin-top:1.5rem">Defensive &amp; market stats</div>
-  <div class="outcomes" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem">
-    <div class="oc">
-      <div class="oc-lbl">BTTS</div>
-      <div class="oc-pct" id="btts-pct">—</div>
-      <div class="oc-imp" id="btts-sub">Both teams to score</div>
-    </div>
-    <div class="oc">
-      <div class="oc-lbl">Over 2.5 goals</div>
-      <div class="oc-pct" id="o25-pct">—</div>
-      <div class="oc-imp" id="o25-sub">Total goals market</div>
-    </div>
-    <div class="oc">
-      <div class="oc-lbl">Under 2.5 goals</div>
-      <div class="oc-pct" id="u25-pct">—</div>
-      <div class="oc-imp" id="u25-sub">Total goals market</div>
-    </div>
-  </div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:1.5rem">
-    <div class="oc">
-      <div class="oc-bar" id="hcs-bar" style="background:var(--blue);width:0%"></div>
-      <div class="oc-lbl" id="hcs-lbl">Home clean sheet</div>
-      <div class="oc-pct" id="hcs-pct">—</div>
-      <div class="oc-imp" id="hcs-sub">—</div>
-    </div>
-    <div class="oc">
-      <div class="oc-bar" id="acs-bar" style="background:var(--red);width:0%"></div>
-      <div class="oc-lbl" id="acs-lbl">Away clean sheet</div>
-      <div class="oc-pct" id="acs-pct">—</div>
-      <div class="oc-imp" id="acs-sub">—</div>
-    </div>
-  </div>
-
-  <div class="section-title" style="margin-top:1.5rem">Corners &amp; cards</div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:0.75rem">
-    <div class="oc">
-      <div class="oc-bar" id="hc-bar" style="background:var(--blue);width:0%"></div>
-      <div class="oc-lbl" id="hc-lbl">Home corners</div>
-      <div class="oc-pct" id="hc-avg">—</div>
-      <div class="oc-imp" id="hc-sub">Avg per match</div>
-    </div>
-    <div class="oc">
-      <div class="oc-bar" id="ac-bar" style="background:var(--red);width:0%"></div>
-      <div class="oc-lbl" id="ac-lbl">Away corners</div>
-      <div class="oc-pct" id="ac-avg">—</div>
-      <div class="oc-imp" id="ac-sub">Avg per match</div>
-    </div>
-  </div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:0.75rem">
-    <div class="oc">
-      <div class="oc-lbl" id="hy-lbl">Home yellow cards</div>
-      <div class="oc-pct" id="hy-avg">—</div>
-      <div class="oc-imp" id="hy-sub">Avg per match</div>
-    </div>
-    <div class="oc">
-      <div class="oc-lbl" id="ay-lbl">Away yellow cards</div>
-      <div class="oc-pct" id="ay-avg">—</div>
-      <div class="oc-imp" id="ay-sub">Avg per match</div>
-    </div>
-  </div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:0.75rem">
-    <div class="oc">
-      <div class="oc-lbl" id="hr-lbl">Home red cards</div>
-      <div class="oc-pct" id="hr-avg">—</div>
-      <div class="oc-imp" id="hr-sub">Avg per match</div>
-    </div>
-    <div class="oc">
-      <div class="oc-lbl" id="ar-lbl">Away red cards</div>
-      <div class="oc-pct" id="ar-avg">—</div>
-      <div class="oc-imp" id="ar-sub">Avg per match</div>
-    </div>
-  </div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:0.75rem">
-    <div class="oc">
-      <div class="oc-bar" id="hs-bar" style="background:var(--blue);width:0%"></div>
-      <div class="oc-lbl" id="hs-lbl">Home total shots</div>
-      <div class="oc-pct" id="hs-avg">—</div>
-      <div class="oc-imp" id="hs-sub">Avg per match</div>
-    </div>
-    <div class="oc">
-      <div class="oc-bar" id="as-bar" style="background:var(--red);width:0%"></div>
-      <div class="oc-lbl" id="as-lbl">Away total shots</div>
-      <div class="oc-pct" id="as-avg">—</div>
-      <div class="oc-imp" id="as-sub">Avg per match</div>
-    </div>
-  </div>
-  <div class="outcomes" style="grid-template-columns:repeat(2,1fr);margin-bottom:1.5rem">
-    <div class="oc">
-      <div class="oc-lbl" id="hf-lbl">Home fouls</div>
-      <div class="oc-pct" id="hf-avg">—</div>
-      <div class="oc-imp" id="hf-sub">Avg per match</div>
-    </div>
-    <div class="oc">
-      <div class="oc-lbl" id="af-lbl">Away fouls</div>
-      <div class="oc-pct" id="af-avg">—</div>
-      <div class="oc-imp" id="af-sub">Avg per match</div>
-    </div>
-  </div>
-
-  <div class="section-title">Most likely scorelines</div>
-  <div class="scorelines" id="bars"></div>
-
-  <div class="section-title">
-    Scoreline matrix
-    <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-3)">— home (rows) · away (cols)</span>
-  </div>
-  <div id="matrix"></div>
-  <div class="matrix-legend" id="legend"></div>
-
-  <div class="history-wrap" id="history-wrap">
-    <div class="history-header">
-      <div class="section-title" style="margin-bottom:0">Search history</div>
-      <button class="clear-btn" onclick="clearHistory()">Clear all</button>
-    </div>
-    <button class="export-btn" onclick="exportCSV()">⬇ Export to CSV</button>
-    <div id="history-list"><div class="history-empty">No searches yet — run a calculation to save it here.</div></div>
-  </div>
-
-  <div class="acca-wrap" id="acca-wrap">
-    <div class="acca-header">
-      <h3>Acca builder</h3>
-      <span class="acca-meta" id="acca-meta">0 legs</span>
-    </div>
-    <div class="acca-legs" id="acca-legs"></div>
-    <div class="acca-result">
-      <div>
-        <div class="acca-meta">Combined odds</div>
-        <div class="acca-total-odds" id="acca-total">—</div>
-      </div>
-      <div>
-        <div class="acca-meta" style="margin-bottom:4px">Implied prob</div>
-        <div style="font-size:13px;font-weight:500" id="acca-prob">—</div>
+      <div class="dstat">
+        <div class="dstat-lbl">Implied prob</div>
+        <div class="dstat-val" id="detail-imp">—</div>
       </div>
     </div>
+    <div class="section-title">Recent results</div>
+    <div class="recent-results" id="detail-results"></div>
+  </div>
+
+  <div class="filter-row" id="filter-row" style="display:none">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('value', this)">Value only</button>
+    <button class="filter-btn" onclick="setFilter('top20', this)">Top 20 rated</button>
+    <button class="filter-btn" onclick="setFilter('odds', this)">Has odds</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="player-table">
+      <thead>
+        <tr>
+          <th class="pos">#</th>
+          <th>Player</th>
+          <th>Country</th>
+          <th>Form rating</th>
+          <th class="right">Win odds</th>
+          <th class="right">Implied</th>
+          <th class="right">Value</th>
+        </tr>
+      </thead>
+      <tbody id="player-tbody">
+        <tr class="loading-row"><td colspan="7">Select a tournament and click Analyse field</td></tr>
+      </tbody>
+    </table>
   </div>
 
 </div>
 <script>
-const TEAMS = [
-  "Algeria","Argentina","Australia","Austria",
-  "Belgium","Bosnia & Herzegovina","Brazil",
-  "Canada","Cape Verde Islands","Colombia","Croatia","Curaçao","Czechia",
-  "DR Congo","Ecuador","Egypt","England",
-  "France","Germany","Ghana","Haiti",
-  "Iran","Iraq","Ivory Coast","Jamaica","Japan","Jordan",
-  "Mexico","Morocco","Netherlands","New Zealand","Nigeria","Norway",
-  "Panama","Paraguay","Portugal","Qatar",
-  "Saudi Arabia","Scotland","Senegal","South Africa","South Korea","Spain","Sweden","Switzerland",
-  "Trinidad and Tobago","Tunisia","Türkiye",
-  "Ukraine","United States","Uruguay","Uzbekistan"
-].sort();
-
-const $ = id => document.getElementById(id);
-
-function buildDropdowns() {
-  ['hteam','ateam'].forEach((id, i) => {
-    const sel = $(id);
-    const def = i === 0 ? 'England' : 'France';
-    TEAMS.forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = t; opt.textContent = t;
-      if (t === def) opt.selected = true;
-      sel.appendChild(opt);
-    });
-  });
-}
-
-function updateTitle() {
-  $('match-title').textContent = $('hteam').value + ' vs ' + $('ateam').value;
-}
-
-function swap() {
-  const ht = $('hteam').value, at = $('ateam').value;
-  const hx = $('hxg').value,   ax = $('axg').value;
-  const hxa = $('hxga').value, axa = $('axga').value;
-  const ho = $('hodds').value, ao = $('aodds').value;
-  $('hteam').value = at; $('ateam').value = ht;
-  $('hxg').value = ax;   $('axg').value = hx;
-  $('hxga').value = axa; $('axga').value = hxa;
-  $('hodds').value = ao; $('aodds').value = ho;
-  updateTitle(); run();
-}
-
 const SERVER = "https://web-production-c0742.up.railway.app";
 
-async function fetchData() {
-  const home = $('hteam').value;
-  const away = $('ateam').value;
-  const btn  = $('fetch-btn');
-  const status = $('fetch-status');
+let allPlayers  = [];
+let currentFilter = 'all';
+let selectedEvent = null;
+
+// ── Event list ────────────────────────────────────────
+
+async function loadEvents() {
+  const list = document.getElementById('event-list');
+  try {
+    const res  = await fetch(`${SERVER}/api/events`);
+    const data = await res.json();
+
+    if (!data.events || data.events.length === 0) {
+      list.innerHTML = '<div class="empty">No upcoming events found.</div>';
+      return;
+    }
+
+    const tour = document.getElementById('tour-sel').value;
+    const filtered = data.events.filter(e =>
+      tour === 'both' || e.tour === tour
+    );
+
+    list.innerHTML = filtered.map((e, i) => {
+      const date = new Date(e.date);
+      const dateStr = date.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+      return `<button class="event-btn" onclick="selectEvent(${i})" id="evt-${i}" data-id="${e.id}" data-tour="${e.tour}" data-name="${e.name}">
+        <span class="event-name">${e.name}<span class="event-tour">${e.tour.toUpperCase()}</span></span>
+        <span class="event-meta">${dateStr}${e.venue ? ' · ' + e.venue : ''}</span>
+      </button>`;
+    }).join('');
+
+    window._events = filtered;
+
+  } catch(e) {
+    list.innerHTML = '<div class="empty">Could not load events — check server is running.</div>';
+  }
+}
+
+function selectEvent(i) {
+  document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`evt-${i}`);
+  if (btn) btn.classList.add('active');
+  selectedEvent = window._events[i];
+  document.getElementById('event-title').textContent = selectedEvent.name;
+  // Reset table
+  document.getElementById('player-tbody').innerHTML =
+    '<tr class="loading-row"><td colspan="7">Click Analyse field to load players</td></tr>';
+  document.getElementById('filter-row').style.display = 'none';
+  allPlayers = [];
+  closeDetail();
+}
+
+// ── Fetch & analyse ───────────────────────────────────
+
+async function fetchField() {
+  if (!selectedEvent) {
+    setStatus('Select a tournament first', 'err');
+    return;
+  }
+
+  const btn    = document.getElementById('fetch-btn');
+  const lastN  = document.getElementById('form-sel').value;
+  const showN  = document.getElementById('show-sel').value;
 
   btn.classList.add('loading');
-  btn.textContent = 'Fetching...';
-  status.className = 'fetch-status';
-  status.textContent = 'Contacting server...';
-  $('data-warnings').textContent = '';
+  btn.textContent = 'Analysing...';
+  setStatus('Fetching field and calculating ratings — this may take 30-60 seconds...', '');
 
   try {
-    const res = await fetch(`${SERVER}/api/match?home=${encodeURIComponent(home)}&away=${encodeURIComponent(away)}`);
+    const res  = await fetch(`${SERVER}/api/analyse?event_id=${selectedEvent.id}&tour=${selectedEvent.tour}&last_n=${lastN}`);
     const data = await res.json();
-    let msgs = [];
 
-    if (data.xg && !data.xg.error) {
-      $('hxg').value = data.xg.home_lambda;
-      $('axg').value = data.xg.away_lambda;
-
-      const hFallback = data.xg.home.fallback;
-      const aFallback = data.xg.away.fallback;
-      let xgMsg = 'xG loaded (last 20 internationals)';
-      if (hFallback || aFallback) {
-        const ft = [];
-        if (hFallback) ft.push(data.xg.home.team);
-        if (aFallback) ft.push(data.xg.away.team);
-        xgMsg = `xG loaded · ⚠ ${ft.join(', ')} using goals as xG proxy (limited data)`;
-      }
-      msgs.push(xgMsg);
-
-      const warnings = [];
-      const checkMissing = (td, label) => {
-        const missing = [];
-        if (td.corners_for == null)      missing.push('corners');
-        if (td.yellow_cards_for == null) missing.push('yellow cards');
-        if (td.shots_for == null)        missing.push('shots');
-        if (td.fouls_for == null)        missing.push('fouls');
-        if (missing.length > 0) warnings.push(`${label}: no ${missing.join(', ')} data`);
-      };
-      checkMissing(data.xg.home, data.xg.home.team);
-      checkMissing(data.xg.away, data.xg.away.team);
-      $('data-warnings').textContent = warnings.join(' · ');
-
-      const h = data.xg.home, a = data.xg.away;
-      const hName = h.team, aName = a.team;
-
-      $('hc-lbl').textContent = hName + ' corners';
-      $('ac-lbl').textContent = aName + ' corners';
-      if (h.corners_for != null) {
-        $('hc-avg').textContent = h.corners_for.toFixed(1);
-        $('hc-sub').textContent = `For: ${h.corners_for} · Against: ${h.corners_against}`;
-        const maxC = Math.max(h.corners_for, a.corners_for || 0, 1);
-        $('hc-bar').style.width = (h.corners_for / maxC * 100).toFixed(0) + '%';
-      }
-      if (a.corners_for != null) {
-        $('ac-avg').textContent = a.corners_for.toFixed(1);
-        $('ac-sub').textContent = `For: ${a.corners_for} · Against: ${a.corners_against}`;
-        const maxC = Math.max(h.corners_for || 0, a.corners_for, 1);
-        $('ac-bar').style.width = (a.corners_for / maxC * 100).toFixed(0) + '%';
-      }
-
-      $('hy-lbl').textContent = hName + ' yellows';
-      $('ay-lbl').textContent = aName + ' yellows';
-      if (h.yellow_cards_for != null) { $('hy-avg').textContent = h.yellow_cards_for.toFixed(1); $('hy-sub').textContent = 'Avg per match'; }
-      if (a.yellow_cards_for != null) { $('ay-avg').textContent = a.yellow_cards_for.toFixed(1); $('ay-sub').textContent = 'Avg per match'; }
-
-      $('hr-lbl').textContent = hName + ' reds';
-      $('ar-lbl').textContent = aName + ' reds';
-      $('hr-avg').textContent = (h.red_cards_for != null && h.red_cards_for > 0) ? h.red_cards_for.toFixed(2) : '0';
-      $('ar-avg').textContent = (a.red_cards_for != null && a.red_cards_for > 0) ? a.red_cards_for.toFixed(2) : '0';
-      $('hr-sub').textContent = 'Avg per match';
-      $('ar-sub').textContent = 'Avg per match';
-
-      $('hs-lbl').textContent = hName + ' shots';
-      $('as-lbl').textContent = aName + ' shots';
-      if (h.shots_for != null) {
-        $('hs-avg').textContent = h.shots_for.toFixed(1);
-        $('hs-sub').textContent = `Faced: ${h.shots_against ?? '—'} avg`;
-        const maxS = Math.max(h.shots_for, a.shots_for || 0, 1);
-        $('hs-bar').style.width = (h.shots_for / maxS * 100).toFixed(0) + '%';
-      }
-      if (a.shots_for != null) {
-        $('as-avg').textContent = a.shots_for.toFixed(1);
-        $('as-sub').textContent = `Faced: ${a.shots_against ?? '—'} avg`;
-        const maxS = Math.max(h.shots_for || 0, a.shots_for, 1);
-        $('as-bar').style.width = (a.shots_for / maxS * 100).toFixed(0) + '%';
-      }
-
-      $('hf-lbl').textContent = hName + ' fouls';
-      $('af-lbl').textContent = aName + ' fouls';
-      if (h.fouls_for != null) { $('hf-avg').textContent = h.fouls_for.toFixed(1); $('hf-sub').textContent = 'Avg per match'; }
-      if (a.fouls_for != null) { $('af-avg').textContent = a.fouls_for.toFixed(1); $('af-sub').textContent = 'Avg per match'; }
-
-    } else if (data.xg?.error) {
-      msgs.push(`xG: ${data.xg.error}`);
+    if (data.error) {
+      setStatus('Error: ' + data.error, 'err');
+      return;
     }
 
-    if (data.odds && !data.odds.error) {
-      $('hodds').value = data.odds.home_odds ? decimalToFraction(data.odds.home_odds) : $('hodds').value;
-      $('dodds').value = data.odds.draw_odds ? decimalToFraction(data.odds.draw_odds) : $('dodds').value;
-      $('aodds').value = data.odds.away_odds ? decimalToFraction(data.odds.away_odds) : $('aodds').value;
-      updateHint('hodds','hodds-hint');
-      updateHint('dodds','dodds-hint');
-      updateHint('aodds','aodds-hint');
-      msgs.push(`odds from ${data.odds.bookmaker}`);
-    } else if (data.odds?.error) {
-      msgs.push(`odds: ${data.odds.error}`);
-    }
+    allPlayers = data.players || [];
+    setStatus(`Loaded ${allPlayers.length} players · odds from ${data.odds_source || 'not available'}`, 'ok');
+    document.getElementById('filter-row').style.display = 'flex';
+    renderTable(showN);
 
-    const allOk = msgs.every(m => !m.toLowerCase().includes('error') && !m.toLowerCase().includes('not found'));
-    status.className = 'fetch-status ' + (allOk ? 'ok' : 'err');
-    status.textContent = msgs.join(' · ');
-    calculate();
-
-  } catch (e) {
-    status.className = 'fetch-status err';
-    status.textContent = 'Server not running — start server.py first';
+  } catch(e) {
+    setStatus('Server error — check Railway deployment', 'err');
   } finally {
     btn.classList.remove('loading');
-    btn.textContent = '↓ Fetch xG & odds';
+    btn.textContent = '⛳ Analyse field';
   }
 }
 
-function decimalToFraction(decimal) {
-  const numerator = decimal - 1;
-  const tolerance = 0.01;
-  for (let denom = 1; denom <= 20; denom++) {
-    const num = Math.round(numerator * denom);
-    if (Math.abs(num / denom - numerator) < tolerance) {
-      const g = gcd(num, denom);
-      return `${num/g}/${denom/g}`;
+// ── Table rendering ───────────────────────────────────
+
+function renderTable(showN) {
+  const tbody = document.getElementById('player-tbody');
+  let players = [...allPlayers];
+
+  // Apply filter
+  if (currentFilter === 'value') {
+    players = players.filter(p => p.odds && p.rating != null && (1/p.odds*100) < p.rating * 10);
+  } else if (currentFilter === 'top20') {
+    players = players.slice(0, 20);
+  } else if (currentFilter === 'odds') {
+    players = players.filter(p => p.odds);
+  }
+
+  // Apply show limit
+  if (showN !== 'all') players = players.slice(0, parseInt(showN));
+
+  if (players.length === 0) {
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="7">No players match the current filter</td></tr>';
+    return;
+  }
+
+  // Find max rating for bar scaling
+  const maxRating = Math.max(...players.map(p => Math.abs(p.rating || 0)), 1);
+
+  tbody.innerHTML = players.map((p, i) => {
+    const rating    = p.rating;
+    const ratingVal = rating != null ? (rating > 0 ? '+' + rating.toFixed(2) : rating.toFixed(2)) : '—';
+    const ratingCls = rating == null ? 'nil' : rating > 0 ? 'pos' : 'neg';
+    const barPct    = rating != null ? Math.min(Math.abs(rating) / maxRating * 100, 100).toFixed(0) : 0;
+    const barCls    = rating != null && rating < 0 ? 'neg' : '';
+
+    const oddsStr  = p.odds ? p.odds.toFixed(2) : '—';
+    const impStr   = p.implied_prob ? p.implied_prob.toFixed(1) + '%' : '—';
+
+    // Simple value flag: if model rating is in top 20% but odds imply lower
+    let valueBadge = '<span class="badge bf">—</span>';
+    if (p.odds && rating != null) {
+      const modelRank = players.indexOf(p) + 1;
+      const totalRated = players.filter(x => x.rating != null).length;
+      const rankPct = modelRank / totalRated;
+      if (rankPct <= 0.15 && p.odds > 10) {
+        valueBadge = '<span class="badge bv">Value</span>';
+      } else if (rankPct <= 0.30 && p.odds > 20) {
+        valueBadge = '<span class="badge bgold">Watch</span>';
+      } else if (rankPct > 0.6 && p.odds && p.odds < 10) {
+        valueBadge = '<span class="badge ba">Short</span>';
+      }
     }
-  }
-  return decimal.toFixed(2);
-}
 
-function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
-
-function parseOdds(val) {
-  val = val.trim();
-  if (val.includes('/')) {
-    const parts = val.split('/');
-    if (parts.length === 2) {
-      const n = parseFloat(parts[0]), d = parseFloat(parts[1]);
-      if (!isNaN(n) && !isNaN(d) && d !== 0) return (n / d) + 1;
-    }
-    return NaN;
-  }
-  const dec = parseFloat(val);
-  return dec >= 1 ? dec : NaN;
-}
-
-function updateHint(inputId, hintId) {
-  const el = document.getElementById(inputId);
-  const hint = document.getElementById(hintId);
-  if (!hint) return;
-  const dec = parseOdds(el.value);
-  if (isNaN(dec)) { hint.textContent = 'invalid'; el.classList.add('invalid'); }
-  else { hint.textContent = '= ' + dec.toFixed(2); el.classList.remove('invalid'); }
-}
-
-$('edge-sl').oninput = () => { $('edge-v').textContent = $('edge-sl').value + '%'; run(); };
-['hxg','axg','hxga','axga'].forEach(id => $(id).addEventListener('input', run));
-['hodds','dodds','aodds'].forEach(id => {
-  $(id).addEventListener('input', () => { updateHint(id, id + '-hint'); run(); });
-});
-
-function poisson(lam, k) {
-  if (k < 0) return 0;
-  let lp = -lam + k * Math.log(lam);
-  for (let i = 2; i <= k; i++) lp -= Math.log(i);
-  return Math.exp(lp);
-}
-
-function setBadge(el, edge, min) {
-  if (edge >= min)       { el.className = 'badge bv'; el.textContent = '+' + (edge*100).toFixed(1) + '% value'; }
-  else if (edge <= -min) { el.className = 'badge ba'; el.textContent = 'overpriced'; }
-  else                   { el.className = 'badge bf'; el.textContent = 'fair'; }
-}
-
-function run() {
-  const ha   = 1.0;
-  const hxgF = parseFloat($('hxg').value)  || 1.5;
-  const axgF = parseFloat($('axg').value)  || 1.5;
-  const hxgA = parseFloat($('hxga').value) || 1.2;
-  const axgA = parseFloat($('axga').value) || 1.2;
-  const hl = ((hxgF + axgA) / 2) * ha;
-  const al = ((axgF + hxgA) / 2) / ha;
-  const hOdds = parseOdds($('hodds').value);
-  const dOdds = parseOdds($('dodds').value);
-  const aOdds = parseOdds($('aodds').value);
-  const minEdge = parseFloat($('edge-sl').value) / 100;
-  const hName = $('hteam').value;
-  const aName = $('ateam').value;
-  const MAX = 7;
-
-  if (!hl || !al || !hOdds || !dOdds || !aOdds) return;
-
-  $('hlbl').textContent = hName + ' win';
-  $('albl').textContent = aName + ' win';
-
-  let grid = [], hw = 0, aw = 0, dr = 0;
-  for (let h = 0; h <= MAX; h++) {
-    grid[h] = [];
-    for (let a = 0; a <= MAX; a++) {
-      const p = poisson(hl, h) * poisson(al, a);
-      grid[h][a] = p;
-      if (h > a) hw += p; else if (a > h) aw += p; else dr += p;
-    }
-  }
-  const tot = hw + aw + dr;
-  hw /= tot; aw /= tot; dr /= tot;
-
-  const himp = 1/hOdds, aimp = 1/aOdds, dimp = 1/dOdds;
-
-  $('hpct').textContent = (hw*100).toFixed(1)+'%';
-  $('dpct').textContent = (dr*100).toFixed(1)+'%';
-  $('apct').textContent = (aw*100).toFixed(1)+'%';
-  $('himp').textContent = 'implied '+(himp*100).toFixed(1)+'%';
-  $('dimp').textContent = 'implied '+(dimp*100).toFixed(1)+'%';
-  $('aimp').textContent = 'implied '+(aimp*100).toFixed(1)+'%';
-  $('hbar').style.width = (hw*100).toFixed(1)+'%';
-  $('dbar').style.width = (dr*100).toFixed(1)+'%';
-  $('abar').style.width = (aw*100).toFixed(1)+'%';
-  setBadge($('hbadge'), hw-himp, minEdge);
-  setBadge($('dbadge'), dr-dimp, minEdge);
-  setBadge($('abadge'), aw-aimp, minEdge);
-
-  let btts = 0, o25 = 0, u25 = 0, hCS = 0, aCS = 0;
-  for (let h = 0; h <= MAX; h++) {
-    for (let a = 0; a <= MAX; a++) {
-      const p = grid[h][a];
-      if (h >= 1 && a >= 1) btts += p;
-      if (h + a > 2.5) o25 += p;
-      if (h + a < 2.5) u25 += p;
-    }
-    hCS += grid[h][0];
-  }
-  for (let a = 0; a <= MAX; a++) aCS += grid[0][a];
-
-  $('btts-pct').textContent = (btts*100).toFixed(1) + '%';
-  $('o25-pct').textContent  = (o25*100).toFixed(1)  + '%';
-  $('u25-pct').textContent  = (u25*100).toFixed(1)  + '%';
-  $('btts-sub').textContent = btts > 0.55 ? 'Likely' : btts > 0.45 ? 'Marginal' : 'Unlikely';
-  $('o25-sub').textContent  = o25  > 0.55 ? 'Likely' : o25  > 0.45 ? 'Marginal' : 'Unlikely';
-  $('u25-sub').textContent  = u25  > 0.55 ? 'Likely' : u25  > 0.45 ? 'Marginal' : 'Unlikely';
-
-  $('hcs-lbl').textContent = hName + ' clean sheet';
-  $('acs-lbl').textContent = aName + ' clean sheet';
-  $('hcs-pct').textContent = (hCS*100).toFixed(1) + '%';
-  $('acs-pct').textContent = (aCS*100).toFixed(1) + '%';
-  $('hcs-bar').style.width = (hCS*100).toFixed(1) + '%';
-  $('acs-bar').style.width = (aCS*100).toFixed(1) + '%';
-  $('hcs-sub').textContent = `xG for ${hxgF.toFixed(2)} · xGA ${hxgA.toFixed(2)}`;
-  $('acs-sub').textContent = `xG for ${axgF.toFixed(2)} · xGA ${axgA.toFixed(2)}`;
-
-  const scores = [];
-  for (let h = 0; h <= MAX; h++)
-    for (let a = 0; a <= MAX; a++)
-      scores.push({h, a, p: grid[h][a]});
-  scores.sort((a,b) => b.p - a.p);
-
-  const top8 = scores.slice(0,8), maxP = top8[0].p;
-  const cols = {home:'#185FA5', away:'#A32D2D', draw:'#3B6D11'};
-  $('bars').innerHTML = top8.map(s => {
-    const type = s.h > s.a ? 'home' : s.a > s.h ? 'away' : 'draw';
-    const w = Math.round(s.p / maxP * 100);
-    return `<div class="bar-row"><div class="bar-score">${s.h}–${s.a}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${cols[type]}">${(s.p*100).toFixed(1)}%</div></div></div>`;
+    return `<tr onclick="showDetail(${allPlayers.indexOf(p)})">
+      <td class="pos">${i+1}</td>
+      <td class="name">${p.name}</td>
+      <td>${p.country || '—'}</td>
+      <td>
+        <div class="rating-bar">
+          <div class="bar-track"><div class="bar-fill ${barCls}" style="width:${barPct}%"></div></div>
+          <div class="rating-val ${ratingCls}">${ratingVal}</div>
+        </div>
+      </td>
+      <td class="right">${oddsStr}</td>
+      <td class="right">${impStr}</td>
+      <td class="right">${valueBadge}</td>
+    </tr>`;
   }).join('');
+}
 
-  const maxCell = Math.max(...scores.map(s => s.p));
-  let html = `<div class="matrix-grid" style="grid-template-columns:22px repeat(${MAX+1},1fr);gap:3px">`;
-  html += '<div class="acell"></div>';
-  for (let a = 0; a <= MAX; a++) html += `<div class="acell">${a}</div>`;
-  for (let h = 0; h <= MAX; h++) {
-    html += `<div class="acell">${h}</div>`;
-    for (let a = 0; a <= MAX; a++) {
-      const p = grid[h][a], inten = Math.min(p/maxCell, 1);
-      let bg, tc;
-      if (h > a)      { bg=`rgba(24,95,165,${(.08+inten*.88).toFixed(2)})`;  tc=inten>.5?'#ddeeff':'#185FA5'; }
-      else if (a > h) { bg=`rgba(163,45,45,${(.08+inten*.88).toFixed(2)})`; tc=inten>.5?'#ffdddd':'#A32D2D'; }
-      else            { bg=`rgba(59,109,17,${(.08+inten*.88).toFixed(2)})`;  tc=inten>.5?'#ddeedd':'#3B6D11'; }
-      html += `<div class="mcell" style="background:${bg};color:${tc}">${(p*100).toFixed(1)}</div>`;
-    }
+// ── Detail panel ──────────────────────────────────────
+
+function showDetail(idx) {
+  const p = allPlayers[idx];
+  if (!p) return;
+
+  document.getElementById('detail-name').textContent = p.name + (p.country ? ' · ' + p.country : '');
+  document.getElementById('detail-rating').textContent = p.rating != null ? (p.rating > 0 ? '+' : '') + p.rating.toFixed(2) : '—';
+  document.getElementById('detail-odds').textContent = p.odds ? p.odds.toFixed(2) : '—';
+  document.getElementById('detail-imp').textContent = p.implied_prob ? p.implied_prob.toFixed(1) + '%' : '—';
+
+  const results = p.recent || [];
+  if (results.length === 0) {
+    document.getElementById('detail-results').innerHTML = '<div class="empty">No recent results found</div>';
+  } else {
+    document.getElementById('detail-results').innerHTML = results.map(r => {
+      const sg    = r.sg_vs_field;
+      const sgStr = sg > 0 ? '+' + sg.toFixed(2) : sg.toFixed(2);
+      const sgCls = sg > 0 ? 'pos' : 'neg';
+      const tier  = r.tier_weight > 1 ? ' ★' : '';
+      return `<div class="result-row">
+        <span class="result-event">${r.event_name}${tier}</span>
+        <span class="result-pos">${r.position || '—'}</span>
+        <span class="result-sg ${sgCls}">${sgStr} vs field</span>
+      </div>`;
+    }).join('');
   }
-  html += '</div>';
-  $('matrix').innerHTML = html;
-  $('legend').innerHTML = `
-    <div class="leg-item"><div class="leg-dot" style="background:#185FA5"></div>${hName} win</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#3B6D11"></div>Draw</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#A32D2D"></div>${aName} win</div>`;
 
-  window._lastResult = { hName, aName, hw, dr, aw, himp, dimp, aimp, minEdge };
-}
-
-function calculate() {
-  run();
-  if (!window._lastResult) return;
-  const r = window._lastResult;
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' · ' + now.toLocaleDateString([], {day:'numeric', month:'short'});
-  saveHistory({
-    home: r.hName, away: r.aName,
-    hxg: $('hxg').value, axg: $('axg').value,
-    hxga: $('hxga').value, axga: $('axga').value,
-    hodds: $('hodds').value, dodds: $('dodds').value, aodds: $('aodds').value,
-    hProb: r.hw, dProb: r.dr, aProb: r.aw,
-    hImp: r.himp, dImp: r.dimp, aImp: r.aimp,
-    minEdge: r.minEdge, time: timeStr,
-  });
-}
-
-let history = JSON.parse(localStorage.getItem('wc_history') || '[]');
-let acca    = JSON.parse(localStorage.getItem('wc_acca')    || '[]');
-
-function saveHistory(entry) {
-  history.unshift(entry);
-  if (history.length > 20) history = history.slice(0, 20);
-  localStorage.setItem('wc_history', JSON.stringify(history));
-  renderHistory();
-}
-
-function clearHistory() {
-  history = []; acca = [];
-  localStorage.removeItem('wc_history');
-  localStorage.removeItem('wc_acca');
-  renderHistory(); renderAcca();
-}
-
-function loadFromHistory(entry) {
-  $('hteam').value = entry.home;
-  $('ateam').value = entry.away;
-  $('hxg').value   = entry.hxg;
-  $('axg').value   = entry.axg;
-  $('hodds').value = entry.hodds;
-  $('dodds').value = entry.dodds;
-  $('aodds').value = entry.aodds;
-  updateTitle();
-  updateHint('hodds','hodds-hint');
-  updateHint('dodds','dodds-hint');
-  updateHint('aodds','aodds-hint');
-  run();
+  document.getElementById('detail-panel').classList.add('open');
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-function addToAcca(entry, selection, odds) {
-  acca = acca.filter(l => !(l.home === entry.home && l.away === entry.away));
-  acca.push({ home: entry.home, away: entry.away, selection, odds });
-  localStorage.setItem('wc_acca', JSON.stringify(acca));
-  renderAcca();
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
 }
 
-function removeAccaLeg(idx) {
-  acca.splice(idx, 1);
-  localStorage.setItem('wc_acca', JSON.stringify(acca));
-  renderAcca();
+// ── Filters ───────────────────────────────────────────
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const showN = document.getElementById('show-sel').value;
+  renderTable(showN);
 }
 
-function renderAcca() {
-  const wrap = $('acca-wrap');
-  if (acca.length === 0) { wrap.classList.remove('visible'); return; }
-  wrap.classList.add('visible');
-  $('acca-meta').textContent = acca.length + (acca.length === 1 ? ' leg' : ' legs');
-  $('acca-legs').innerHTML = acca.map((leg, i) => `
-    <div class="acca-leg">
-      <div class="acca-leg-match">${leg.home} vs ${leg.away}</div>
-      <div class="acca-leg-sel">${leg.selection}</div>
-      <div class="acca-leg-odds">${leg.odds.toFixed(2)}</div>
-      <button class="acca-leg-remove" onclick="removeAccaLeg(${i})">×</button>
-    </div>`).join('');
-  const combined = acca.reduce((acc, leg) => acc * leg.odds, 1);
-  $('acca-total').textContent = combined.toFixed(2);
-  $('acca-prob').textContent  = (1 / combined * 100).toFixed(1) + '%';
+// ── Utils ─────────────────────────────────────────────
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status ' + cls;
 }
 
-function renderHistory() {
-  const list = $('history-list');
-  if (history.length === 0) {
-    list.innerHTML = '<div class="history-empty">No searches yet — run a calculation to save it here.</div>';
-    return;
-  }
-  list.innerHTML = history.map((e, i) => {
-    const hEdge = ((e.hProb - e.hImp) * 100).toFixed(1);
-    const dEdge = ((e.dProb - e.dImp) * 100).toFixed(1);
-    const aEdge = ((e.aProb - e.aImp) * 100).toFixed(1);
-    const ec = edge => parseFloat(edge) >= e.minEdge * 100 ? 'val' : parseFloat(edge) <= -e.minEdge * 100 ? 'over' : '';
-    const hLabel = e.home + ' win', dLabel = 'Draw', aLabel = e.away + ' win';
-    return `<div class="history-item" onclick="loadFromHistory(history[${i}])">
-      <div class="history-match"><span>${e.home} vs ${e.away}</span><span class="history-time">${e.time}</span></div>
-      <div class="history-stats">
-        <span class="hstat ${ec(hEdge)}">${hLabel} ${(e.hProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${hLabel}', ${parseOdds(e.hodds).toFixed(4)})">+ acca</button></span>
-        <span class="hstat ${ec(dEdge)}">${dLabel} ${(e.dProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${dLabel}', ${parseOdds(e.dodds).toFixed(4)})">+ acca</button></span>
-        <span class="hstat ${ec(aEdge)}">${aLabel} ${(e.aProb*100).toFixed(1)}%
-          <button class="acca-add-btn" onclick="event.stopPropagation(); addToAcca(history[${i}], '${aLabel}', ${parseOdds(e.aodds).toFixed(4)})">+ acca</button></span>
-      </div></div>`;
-  }).join('');
-}
-
-function exportCSV() {
-  if (history.length === 0) { alert('No searches to export yet.'); return; }
-  const headers = ['Home Team','Away Team','Home xG','Away xG','Home xGA','Away xGA','Home Odds','Draw Odds','Away Odds','Model Home %','Model Draw %','Model Away %','Implied Home %','Implied Draw %','Implied Away %','Home Edge %','Draw Edge %','Away Edge %','Home Value','Draw Value','Away Value','Actual Result'];
-  const rows = history.map(e => {
-    const minEdgePct = (e.minEdge || 0.05) * 100;
-    const hEdge = ((e.hProb - e.hImp) * 100).toFixed(1);
-    const dEdge = ((e.dProb - e.dImp) * 100).toFixed(1);
-    const aEdge = ((e.aProb - e.aImp) * 100).toFixed(1);
-    const vl = edge => parseFloat(edge) >= minEdgePct ? 'VALUE' : parseFloat(edge) <= -minEdgePct ? 'OVERPRICED' : 'FAIR';
-    return [e.home, e.away, e.hxg||'', e.axg||'', e.hxga||'', e.axga||'',
-      e.hodds ? `'${e.hodds}` : '', e.dodds ? `'${e.dodds}` : '', e.aodds ? `'${e.aodds}` : '',
-      (e.hProb*100).toFixed(1)+'%', (e.dProb*100).toFixed(1)+'%', (e.aProb*100).toFixed(1)+'%',
-      (e.hImp*100).toFixed(1)+'%', (e.dImp*100).toFixed(1)+'%', (e.aImp*100).toFixed(1)+'%',
-      hEdge+'%', dEdge+'%', aEdge+'%', vl(hEdge), vl(dEdge), vl(aEdge), ''
-    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
-  });
-  const bom = '\uFEFF';
-  const csv = bom + [headers.map(h => `"${h}"`).join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `wc2026-engine-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-const TEAM_NAME_MAP = {
-  "Algeria":"Algeria","Argentina":"Argentina","Australia":"Australia","Austria":"Austria",
-  "Belgium":"Belgium","Bosnia & Herzegovina":"Bosnia & Herzegovina","Brazil":"Brazil",
-  "Canada":"Canada","Cape Verde Islands":"Cape Verde Islands","Cape Verde":"Cape Verde Islands",
-  "Colombia":"Colombia","Congo DR":"DR Congo","Côte d'Ivoire":"Ivory Coast",
-  "Croatia":"Croatia","Curaçao":"Curaçao","Curacao":"Curaçao",
-  "Czechia":"Czechia","Czech Republic":"Czechia","DR Congo":"DR Congo",
-  "Ecuador":"Ecuador","Egypt":"Egypt","England":"England",
-  "France":"France","Germany":"Germany","Ghana":"Ghana","Haiti":"Haiti",
-  "Iran":"Iran","Iraq":"Iraq","Ivory Coast":"Ivory Coast",
-  "Jamaica":"Jamaica","Japan":"Japan","Jordan":"Jordan",
-  "Mexico":"Mexico","Morocco":"Morocco",
-  "Netherlands":"Netherlands","New Zealand":"New Zealand","Nigeria":"Nigeria","Norway":"Norway",
-  "Panama":"Panama","Paraguay":"Paraguay","Portugal":"Portugal","Qatar":"Qatar",
-  "Saudi Arabia":"Saudi Arabia","Scotland":"Scotland","Senegal":"Senegal",
-  "South Africa":"South Africa","South Korea":"South Korea","Korea Republic":"South Korea",
-  "Spain":"Spain","Sweden":"Sweden","Switzerland":"Switzerland",
-  "Trinidad and Tobago":"Trinidad and Tobago","Tunisia":"Tunisia",
-  "Türkiye":"Türkiye","Turkey":"Türkiye",
-  "Ukraine":"Ukraine","United States":"United States","USA":"United States",
-  "Uruguay":"Uruguay","Uzbekistan":"Uzbekistan",
+document.getElementById('tour-sel').onchange = loadEvents;
+document.getElementById('show-sel').onchange = () => {
+  if (allPlayers.length) renderTable(document.getElementById('show-sel').value);
 };
 
-let fixturesData = [];
-
-async function loadFixtures() {
-  const list = $('fixture-list');
-  try {
-    const res = await fetch(`${SERVER}/api/fixtures`);
-    const data = await res.json();
-    if (data.error || !data.fixtures || data.fixtures.length === 0) {
-      list.innerHTML = '<div class="fixture-loading">No upcoming fixtures found.</div>';
-      return;
-    }
-    fixturesData = data.fixtures;
-    renderFixtures();
-  } catch (e) {
-    list.innerHTML = '<div class="fixture-loading">Could not load fixtures.</div>';
-  }
-}
-
-function renderFixtures() {
-  const list = $('fixture-list');
-  const currentHome = $('hteam').value;
-  const currentAway = $('ateam').value;
-  list.innerHTML = fixturesData.map((f, i) => {
-    const home = TEAM_NAME_MAP[f.home] || f.home;
-    const away = TEAM_NAME_MAP[f.away] || f.away;
-    const date = new Date(f.date);
-    const dateStr = date.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-    const isActive = home === currentHome && away === currentAway;
-    const venue = f.venue ? ` · ${f.city || f.venue}` : '';
-    return `<button class="fixture-btn ${isActive ? 'active' : ''}" onclick="selectFixture(${i})">
-      <span class="fixture-match">${home} vs ${away}</span>
-      <span class="fixture-date">${dateStr}${venue}</span>
-    </button>`;
-  }).join('');
-}
-
-function selectFixture(i) {
-  const f = fixturesData[i];
-  const home = TEAM_NAME_MAP[f.home] || f.home;
-  const away = TEAM_NAME_MAP[f.away] || f.away;
-  $('hteam').value = home;
-  $('ateam').value = away;
-  updateTitle(); run(); renderFixtures();
-}
-
-buildDropdowns();
-updateTitle();
-updateHint('hodds','hodds-hint');
-updateHint('dodds','dodds-hint');
-updateHint('aodds','aodds-hint');
-renderHistory();
-renderAcca();
-run();
-loadFixtures();
+loadEvents();
 </script>
 </body>
 </html>
