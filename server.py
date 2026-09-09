@@ -527,6 +527,12 @@ def api_analyse():
             "tour":       tour,
             "players":    results,
             "odds_source": odds_data.get("bookmaker", ""),
+            "debug_counts": {
+                "field_players":     len(players),
+                "candidates":        len(candidates),
+                "analysed_ok":       len(analysed),
+                "final_results":     len(results),
+            },
         })
 
     except Exception as e:
