@@ -317,6 +317,36 @@ def index():
     return "OK", 200
 
 
+@app.route("/api/debug_player")
+def api_debug_player():
+    """Directly exercise get_player_recent_results for one player and return
+    either its real output or the full exception — bypasses log-scrolling."""
+    player_id = request.args.get("player_id", "")
+    tour      = request.args.get("tour", "pga")
+    last_n    = int(request.args.get("last_n", 5))
+    if not player_id:
+        return jsonify({"error": "Provide player_id"}), 400
+
+    import traceback
+    try:
+        recent = get_player_recent_results(player_id, tour, last_n)
+        rating = calculate_player_rating(recent)
+        return jsonify({
+            "player_id": player_id,
+            "tour": tour,
+            "recent": recent,
+            "rating": rating,
+            "raw_eventlog_status": "see recent[] above — empty means no completed events matched",
+        })
+    except Exception as e:
+        return jsonify({
+            "player_id": player_id,
+            "tour": tour,
+            "error": f"{type(e).__name__}: {e}",
+            "traceback": traceback.format_exc(),
+        }), 500
+
+
 @app.route("/api/debug")
 def api_debug():
     """Raw passthrough of ESPN's response for a given event — for inspection only.
