@@ -101,13 +101,21 @@ def get_event_field(event_id, tour="pga"):
         print(f"[get_event_field] leaderboard miss for {event_id}, falling back to scoreboard")
         sb = espn_get(f"{ESPN_BASE}/{tour}/scoreboard")
         if not sb:
+            print(f"[get_event_field] scoreboard call itself failed for tour={tour}")
             return [], 0
+        sb_events = sb.get("events", [])
+        print(f"[get_event_field] scoreboard returned {len(sb_events)} events: "
+              f"{[str(e.get('id')) for e in sb_events]}")
         data = next(
-            (e for e in sb.get("events", []) if str(e.get("id")) == str(event_id)),
+            (e for e in sb_events if str(e.get("id")) == str(event_id)),
             None
         )
         if not data:
+            print(f"[get_event_field] event {event_id} not present in scoreboard response")
             return [], 0
+        comps = data.get("competitions", [{}])[0].get("competitors", [])
+        print(f"[get_event_field] matched event {event_id} in scoreboard, "
+              f"{len(comps)} competitors present")
         data = {"events": [data]}  # normalize to the shape the code below expects
 
     players = []
@@ -167,8 +175,8 @@ def get_player_recent_results(player_id, tour="pga", last_n=5):
             continue
 
         # Check event is completed
-        status = event_data.get("competitions", [{}])[0].get("status", {}).get("type", {}).get("completed", False)
-        if not status:
+        status = _as_dict(event_data.get("competitions", [{}])[0].get("status")).get("type", {})
+        if not _as_dict(status).get("completed", False):
             continue
 
         event_name = event_data.get("name", "")
@@ -183,14 +191,15 @@ def get_player_recent_results(player_id, tour="pga", last_n=5):
         for comp in competitors:
             score_val = None
             try:
-                score_val = float(comp.get("score", {}).get("value", 0))
+                score_val = float(_as_dict(comp.get("score")).get("value", 0))
                 all_scores.append(score_val)
             except:
                 pass
 
             if str(comp.get("athlete", {}).get("id")) == str(player_id):
                 player_score = score_val
-                player_position = comp.get("status", {}).get("position", {}).get("displayName", "")
+                comp_status = _as_dict(comp.get("status"))
+                player_position = _as_dict(comp_status.get("position")).get("displayName", "")
 
         if player_score is None or not all_scores:
             continue
