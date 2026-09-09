@@ -312,6 +312,34 @@ def index():
     return "OK", 200
 
 
+@app.route("/api/debug")
+def api_debug():
+    """Raw passthrough of ESPN's response for a given event — for inspection only.
+    Shows exactly what leaderboard/scoreboard return, un-normalized, un-guarded."""
+    event_id = request.args.get("event_id", "")
+    tour     = request.args.get("tour", "pga")
+    if not event_id:
+        return jsonify({"error": "Provide event_id"}), 400
+
+    leaderboard = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
+    scoreboard  = espn_get(f"{ESPN_BASE}/{tour}/scoreboard")
+
+    sb_match = None
+    if scoreboard:
+        sb_match = next(
+            (e for e in scoreboard.get("events", []) if str(e.get("id")) == str(event_id)),
+            None
+        )
+
+    return jsonify({
+        "event_id": event_id,
+        "tour": tour,
+        "leaderboard_endpoint_result": leaderboard,   # None if it 404'd/failed
+        "scoreboard_matched_event": sb_match,          # None if not found in scoreboard either
+        "scoreboard_all_event_ids": [str(e.get("id")) for e in scoreboard.get("events", [])] if scoreboard else None,
+    })
+
+
 @app.route("/api/events")
 def api_events():
     """Return upcoming PGA and DP World Tour events."""
