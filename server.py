@@ -532,6 +532,7 @@ def api_analyse():
                 "candidates":        len(candidates),
                 "analysed_ok":       len(analysed),
                 "final_results":     len(results),
+                "sample_players":    players[:3],
             },
         })
 
