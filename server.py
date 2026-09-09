@@ -7,6 +7,7 @@ Calculates DIY strokes gained by comparing player scores vs field average.
 import os
 import time
 import requests
+import concurrent.futures
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -162,7 +163,11 @@ def get_player_recent_results(player_id, tour="pga", last_n=5):
         return []
 
     results = []
-    events = data.get("events", {}).get("items", [])
+    events_field = data.get("events", [])
+    events = events_field.get("items", []) if isinstance(events_field, dict) else events_field
+    if not isinstance(events, list):
+        print(f"[get_player_recent_results] unexpected 'events' shape for player {player_id}: {type(events_field)}")
+        events = []
 
     for event_ref in events:
         # Each item is a reference URL — fetch it
@@ -431,16 +436,47 @@ def api_analyse():
             for p in odds_data["players"]:
                 odds_map[p["name"].lower()] = p["odds"]
 
-        # Calculate ratings for each player
-        results = []
-        for player in players[:50]:  # Limit to top 50 to avoid rate limits
+        # Calculate ratings for each player — run concurrently, since each player
+        # needs several sequential ESPN calls internally and doing 50 of those
+        # one-after-another (with a 0.5s sleep between each) easily runs past
+        # Gunicorn's timeout. 8 workers keeps ESPN load reasonable while cutting
+        # wall-clock time by roughly 8x.
+        candidates = [p for p in players[:50] if p.get("id")]
+
+        def _analyse_one(player):
             pid  = player.get("id")
             name = player.get("name", "")
-            if not pid:
-                continue
-
             recent = get_player_recent_results(pid, tour, last_n)
             rating = calculate_player_rating(recent)
+            return {
+                "player_id":   pid,
+                "name":        name,
+                "country":     player.get("country", ""),
+                "rating":      rating,
+                "events_used": len(recent),
+                "recent":      recent,
+            }
+
+        analysed = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+            future_to_player = {pool.submit(_analyse_one, p): p for p in candidates}
+            for future in concurrent.futures.as_completed(future_to_player):
+                p = future_to_player[future]
+                try:
+                    res = future.result()
+                    analysed[res["player_id"]] = res
+                except Exception as e:
+                    import traceback
+                    print(f"[api_analyse] failed on player {p.get('name')} ({p.get('id')}): "
+                          f"{type(e).__name__}: {e}")
+                    traceback.print_exc()
+
+        results = []
+        for player in candidates:
+            base = analysed.get(player.get("id"))
+            if not base:
+                continue
+            name = base["name"]
 
             # Match odds
             player_odds = None
@@ -449,18 +485,9 @@ def api_analyse():
                     player_odds = odds_val
                     break
 
-            results.append({
-                "player_id":    pid,
-                "name":         name,
-                "country":      player.get("country", ""),
-                "rating":       rating,
-                "events_used":  len(recent),
-                "recent":       recent,
-                "odds":         player_odds,
-                "implied_prob": round(1 / player_odds * 100, 2) if player_odds else None,
-            })
-
-            time.sleep(0.5)
+            base["odds"]         = player_odds
+            base["implied_prob"] = round(1 / player_odds * 100, 2) if player_odds else None
+            results.append(base)
 
         # Sort by rating descending
         results.sort(key=lambda x: x["rating"] or -99, reverse=True)
