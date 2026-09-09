@@ -86,8 +86,22 @@ def get_upcoming_events(tour="pga"):
 def get_event_field(event_id, tour="pga"):
     """Get full field for an event with current scores."""
     data = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
+
     if not data:
-        return [], 0
+        # /leaderboard/{id} 404s for events ESPN hasn't finalized the field for yet
+        # (common when the tournament is still a week+ out). Fall back to the
+        # scoreboard listing, which tends to carry the event earlier.
+        print(f"[get_event_field] leaderboard miss for {event_id}, falling back to scoreboard")
+        sb = espn_get(f"{ESPN_BASE}/{tour}/scoreboard")
+        if not sb:
+            return [], 0
+        data = next(
+            (e for e in sb.get("events", []) if str(e.get("id")) == str(event_id)),
+            None
+        )
+        if not data:
+            return [], 0
+        data = {"events": [data]}  # normalize to the shape the code below expects
 
     players = []
     leaderboard = data.get("events", [{}])[0].get("competitions", [{}])[0].get("competitors", [])
@@ -286,7 +300,7 @@ def api_events():
     """Return upcoming PGA and DP World Tour events."""
     try:
         pga_events  = get_upcoming_events("pga")
-        euro_events = get_upcoming_events("euro")
+        euro_events = get_upcoming_events("eur")
         all_events  = pga_events + euro_events
         # Sort by date
         all_events.sort(key=lambda x: x.get("date", ""))
