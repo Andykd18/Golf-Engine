@@ -83,6 +83,13 @@ def get_upcoming_events(tour="pga"):
     return events
 
 
+def _as_dict(value):
+    """ESPN sometimes returns 'score'/'status' as a nested dict, and sometimes
+    (usually for events that haven't teed off yet) as a plain string like '-'.
+    Normalize so downstream .get() calls never blow up either way."""
+    return value if isinstance(value, dict) else {}
+
+
 def get_event_field(event_id, tour="pga"):
     """Get full field for an event with current scores."""
     data = espn_get(f"{ESPN_BASE}/{tour}/leaderboard/{event_id}")
@@ -108,7 +115,7 @@ def get_event_field(event_id, tour="pga"):
 
     scores = []
     for comp in leaderboard:
-        score_to_par = comp.get("score", {}).get("value")
+        score_to_par = _as_dict(comp.get("score")).get("value")
         if score_to_par is not None:
             try:
                 scores.append(float(score_to_par))
@@ -119,13 +126,14 @@ def get_event_field(event_id, tour="pga"):
 
     for comp in leaderboard:
         athlete = comp.get("athlete", {})
+        status = _as_dict(comp.get("status"))
         players.append({
             "id":           athlete.get("id"),
             "name":         athlete.get("displayName"),
             "country":      athlete.get("flag", {}).get("alt", ""),
-            "world_ranking": comp.get("status", {}).get("rank"),
-            "score_to_par": comp.get("score", {}).get("displayValue", "E"),
-            "position":     comp.get("status", {}).get("position", {}).get("displayName", ""),
+            "world_ranking": status.get("rank"),
+            "score_to_par": _as_dict(comp.get("score")).get("displayValue", "E"),
+            "position":     _as_dict(status.get("position")).get("displayName", ""),
         })
 
     return players, field_avg
